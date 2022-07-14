@@ -1,4 +1,6 @@
 const path = require('path');
+const ESLintWebpackPlugin = require('eslint-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -14,6 +16,13 @@ module.exports = {
   },
   module: {
     rules: [
+      // webpack 只支持 es module（ import & export ），并不支持编译 es6 语法
+      // 编译需要使用 babel-loader，配置写在了 .babelrc.js 文件
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: ['babel-loader'],
+      },
       // css-loader：负责将 Css 文件编译成 Webpack 能识别的模块，让 Css 文件可以被引入
       // style-loader：会动态创建一个 Style 标签，里面放置 Webpack 中 Css 模块内容
       {
@@ -84,5 +93,28 @@ module.exports = {
       },
     ],
   },
-  plugins: [],
+  plugins: [
+    /**
+     * eslint 在 webpack4 的时候需要通过 loader 启用，在 webpack5 通过插件启用
+     */
+    new ESLintWebpackPlugin({
+      // 指定要检查文件的根路径，lint 不通过，则编译不通过
+      context: path.resolve(__dirname, 'src'),
+      // 指定需要排除检查的文件夹或文件，必须是根路径的相对路径
+      // 路径 ./ 代表的就是 src 文件夹内部
+      exclude: './eslint-test',
+    }),
+    /**
+     * 生成的 script 默认会加在 head 里（尾部），并且携带有 defer 属性
+     *    defer：
+     *      加载后续文档的过程和 js 脚本的加载是并行进行的（异步），
+     *      但 js 脚本的执行需要等到文档所有元素解析渲染完成之后，DOMContentLoaded 事件触发之前
+     *
+     * 了解更多配置选项，直接去：https://github.com/jantimon/html-webpack-plugin
+     *
+     */
+    new HtmlWebpackPlugin({
+      template: './index.html',
+    }),
+  ],
 };

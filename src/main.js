@@ -7,11 +7,15 @@ import './sass/index.sass';
 import './sass/index.scss';
 import './styl/index.styl';
 import gwr from './media/lightPollution.mp4';
+import num from './eslint-test';
 
 console.log(count(2, 1));
 console.log(sum(1, 2, 3, 4));
 
-// 测试视频
+// 测试 eslint
+console.log(num);
+
+// 测试视频资源的处理
 createVideo();
 
 function createVideo() {
@@ -25,7 +29,7 @@ function createVideo() {
   video.dataset.name = '光污染';
   const source = document.createElement('source');
   source.type = 'video/mp4';
-  source.src = gwr; // 是启动服务下的绝对路径，例如：http://127.0.0.1:8081/dist/js/../media/777c7be1.mp4
+  source.src = gwr; // gwr 的值是启动服务下的绝对路径，例如：http://127.0.0.1:8081/dist/js/../media/777c7be1.mp4
   video.append(source);
   document.body.append(video);
 }
