@@ -2,6 +2,7 @@ const path = require('path');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 /**
  * @desc 处理样式公共方法
@@ -37,6 +38,8 @@ const getStyleLoaders = (preProcessor) => {
 
 module.exports = {
   mode: 'production',
+  // 生产模式一般不需要代码映射，如果需要，就用这个，包含行/列映射，但是打包编译速度慢
+  devtool: 'source-map',
   entry: {
     /**
      * 1、注意这个地方的相对路径
@@ -50,7 +53,7 @@ module.exports = {
      * 根目录，所有文件的输出目录
      */
     path: path.resolve(__dirname, 'dist'),
-    filename: 'js/bundle.js',
+    filename: 'js/bundle.[hash:8].js',
     /**
      * webpack5 清空目标文件夹不再需要引入插件
      */
@@ -196,4 +199,15 @@ module.exports = {
       filename: 'css/main.[contenthash:8].css',
     }),
   ],
+  optimization: {
+    minimizer: [
+      // 1、在 webpack@5 中，可以使用 `...` 语法来扩展现有的 minimizer（即 `terser-webpack-plugin`），对 js 代码进行压缩
+      //    这种情况下 terser-webpack-plugin 不需要安装
+      // 2、如果使用的是 webpack v5 或更高版本，同时希望自定义配置，那么仍需要安装 terser-webpack-plugin
+      //    如果使用 webpack v4，则必须安装 terser-webpack-plugin v4 的版本
+      '...',
+      // 压缩 css 代码，直接写在 plugins 里面也可以，直接 new CssMinimizerPlugin() 即可
+      new CssMinimizerPlugin(),
+    ],
+  },
 };

@@ -4,6 +4,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
+  // 开发模式一般用这个，打包编译速度相对快，只包含行映射，没有列映射
+  devtool: 'cheap-module-source-map',
   entry: {
     /**
      * 1、注意这个地方的相对路径
