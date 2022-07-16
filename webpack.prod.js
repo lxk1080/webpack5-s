@@ -65,13 +65,18 @@ module.exports = {
         // oneOf 让文件被打包时只能匹配上一个 loader 处理，剩下的就不匹配了，提升打包速度
         oneOf: [
           /**
-           * webpack 只支持 es module（ import & export ），并不支持编译 es6 语法
-           * 编译需要使用 babel-loader，配置写在了 .babelrc.js 文件
+           * 1、webpack 只支持 es module（ import & export ），并不支持编译 es6 语法
+           * 2、编译需要使用 babel-loader，配置写在了 .babelrc.js 文件
+           * 3、开启 babel 缓存，再次打包时只打包修改过的部分，可以提升再次打包时的构建速度
            */
           {
             test: /\.js$/,
             exclude: /node_modules/, // 排除引入的 node_modules 中的文件
-            use: ['babel-loader'],
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true, // 开启 babel 编译缓存，默认缓存路径为 node_modules/.cache
+              cacheCompression: false, // 缓存的文件不要压缩，压缩需要耗费时间
+            },
           },
 
           /**
@@ -179,6 +184,10 @@ module.exports = {
       // node_modules 是默认被排除的
       // 路径 ./ 代表的就是 src 文件夹内部
       exclude: ['node_modules', './eslint-test'],
+      // 开启缓存，再次打包只用检查修改过的部分，提升构建速度
+      cache: true,
+      // 缓存目录，绝对路径，设置缓存文件的位置和 babel 缓存一起
+      cacheLocation: path.resolve(__dirname, './node_modules/.cache/.eslintcache'),
     }),
 
     /**
