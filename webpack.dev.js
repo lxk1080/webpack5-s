@@ -1,6 +1,11 @@
+const os = require('os');
 const path = require('path');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+// cpu 核数，逻辑核数
+const threads = os.cpus().length;
+console.log('threads ==>', threads);
 
 module.exports = {
   mode: 'development',
@@ -52,6 +57,12 @@ module.exports = {
             // exclude: /node_modules/, // 排除引入的 node_modules 中的文件
             include: path.resolve(__dirname, 'src'), // include 和 exclude 只能用一个
             use: [
+              {
+                loader: 'thread-loader', // 开启多进程
+                options: {
+                  workers: threads, // 进程数
+                },
+              },
               {
                 loader: 'babel-loader',
                 options: {
@@ -171,6 +182,8 @@ module.exports = {
       cache: true,
       // 缓存目录，绝对路径，设置缓存文件的位置和 babel 缓存一起
       cacheLocation: path.resolve(__dirname, './node_modules/.cache/.eslintcache'),
+      // 开启多进程并设置进程数
+      threads,
     }),
 
     /**

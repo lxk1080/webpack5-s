@@ -1,8 +1,14 @@
+const os = require('os');
 const path = require('path');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TerserWebpackPlugin = require('terser-webpack-plugin');
+
+// cpu 核数，逻辑核数
+const threads = os.cpus().length;
+console.log('threads ==>', threads);
 
 /**
  * @desc 处理样式公共方法
@@ -53,7 +59,7 @@ module.exports = {
      * 根目录，所有文件的输出目录
      */
     path: path.resolve(__dirname, 'dist'),
-    filename: 'js/bundle.[hash:8].js',
+    filename: 'js/bundle.[contenthash:8].js',
     /**
      * webpack5 清空目标文件夹不再需要引入插件
      */
@@ -72,11 +78,21 @@ module.exports = {
           {
             test: /\.js$/,
             exclude: /node_modules/, // 排除引入的 node_modules 中的文件
-            loader: 'babel-loader',
-            options: {
-              cacheDirectory: true, // 开启 babel 编译缓存，默认缓存路径为 node_modules/.cache
-              cacheCompression: false, // 缓存的文件不要压缩，压缩需要耗费时间
-            },
+            use: [
+              {
+                loader: 'thread-loader', // 开启多进程
+                options: {
+                  workers: threads, // 进程数
+                },
+              },
+              {
+                loader: 'babel-loader',
+                options: {
+                  cacheDirectory: true, // 开启 babel 编译缓存，默认缓存路径为 node_modules/.cache
+                  cacheCompression: false, // 缓存的文件不要压缩，压缩需要耗费时间
+                },
+              },
+            ],
           },
 
           /**
@@ -133,12 +149,12 @@ module.exports = {
             generator: {
               /**
                * 将图片文件输出到 imgs 目录中
-               * [hash:8]: hash 值取前 8 位
+               * [contenthash:8]: hash 值取前 8 位
                * [ext]: 使用之前的文件扩展名
                * [query]: 添加之前的 query 参数，注意这个参数不会加在输出的文件上，在请求文件的时候会自动加上
-               * @example filename: "imgs/[hash:8].png",
+               * @example filename: "imgs/[contenthash:8].png",
                */
-              filename: 'imgs/[hash:8][ext][query]',
+              filename: 'imgs/[contenthash:8][ext][query]',
             },
           },
 
@@ -154,7 +170,7 @@ module.exports = {
             type: 'asset/resource',
             // 可以编程，对不同的文件类型设置不同的目标目录
             // generator: {
-            //   filename: "fonts/[hash:8][ext]",
+            //   filename: "fonts/[contenthash:8][ext]",
             // },
             generator: {
               filename: (content) => {
@@ -162,9 +178,9 @@ module.exports = {
                   content.filename.includes('.ttf') ||
                   content.filename.includes('.woff')
                 ) {
-                  return 'fonts/[hash:8][ext]'
+                  return 'fonts/[contenthash:8][ext]'
                 }
-                return 'media/[hash:8][ext]'
+                return 'media/[contenthash:8][ext]'
               }
             },
           },
@@ -188,6 +204,8 @@ module.exports = {
       cache: true,
       // 缓存目录，绝对路径，设置缓存文件的位置和 babel 缓存一起
       cacheLocation: path.resolve(__dirname, './node_modules/.cache/.eslintcache'),
+      // 开启多进程并设置进程数
+      threads,
     }),
 
     /**
@@ -216,13 +234,20 @@ module.exports = {
   ],
 
   optimization: {
+    // minimizer 的默认值为 [new TerserWebpackPlugin()]，表示自动压缩 js 代码
     minimizer: [
-      // 1、在 webpack@5 中，可以使用 `...` 语法来扩展现有的 minimizer（即 `terser-webpack-plugin`），对 js 代码进行压缩
-      //    这种情况下 terser-webpack-plugin 不需要安装
-      // 2、如果使用的是 webpack v5 或更高版本，同时希望自定义配置，那么仍需要安装 terser-webpack-plugin
-      //    如果使用 webpack v4，则必须安装 terser-webpack-plugin v4 的版本
-      '...',
-      // 压缩 css 代码，直接写在 plugins 里面也可以，直接 new CssMinimizerPlugin() 即可
+      /**
+       * 1、在 webpack5 中，可以使用 `...` 语法来访问默认值（即 `terser-webpack-plugin`），扩展现有的 minimizer，对 js 代码进行压缩
+       *    这种情况下 terser-webpack-plugin 不需要安装
+       * 2、如果使用的是 webpack v5 或更高版本，同时希望自定义配置，那么仍需要安装 terser-webpack-plugin
+       *    如果使用 webpack v4，则必须安装 terser-webpack-plugin v4 的版本
+       */
+      // '...',
+      new TerserWebpackPlugin({
+        // 多进程压缩，手动设置进程数，默认也会开启多进程的，默认数量：os.cpus().length - 1
+        parallel: threads,
+      }),
+      // 压缩 css 代码，直接写在 plugins 里面也可以，直接 new CssMinimizerPlugin() 即可，规范而言，推荐写在这
       new CssMinimizerPlugin(),
     ],
   },
