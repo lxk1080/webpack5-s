@@ -33,3 +33,9 @@ function createVideo() {
   video.append(source);
   document.body.append(video);
 }
+
+// 测试 js 热替换
+if (module.hot) {
+  module.hot.accept(['./js/count'], () => console.log('count 文件更新了'));
+  module.hot.accept(['./js/sum'], () => console.log('sum 文件更新了'));
+}
