@@ -90,6 +90,7 @@ module.exports = {
                 options: {
                   cacheDirectory: true, // 开启 babel 编译缓存，默认缓存路径为 node_modules/.cache
                   cacheCompression: false, // 缓存的文件不要压缩，压缩需要耗费时间
+                  plugins: ["@babel/plugin-transform-runtime"], // 禁用 Babel 对每个文件的 runtime 注入，减少代码体积
                 },
               },
             ],
