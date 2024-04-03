@@ -19,15 +19,7 @@ export const data = {
       "children": []
     }
   ],
-  "git": {
-    "contributors": [
-      {
-        "name": "unknown",
-        "email": "2664276518@qq.com",
-        "commits": 1
-      }
-    ]
-  },
+  "git": {},
   "filePathRelative": "base/README.md"
 }
 
