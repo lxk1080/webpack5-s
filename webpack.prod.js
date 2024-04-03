@@ -12,7 +12,7 @@ console.log('threads ==>', threads);
 
 /**
  * @desc 处理样式公共方法
- * 1、使用 MiniCssExtractPlugin.loader 替换了 style-loader
+ * 1、使用 MiniCssExtractPlugin.loader 替换 style-loader，以通过 link 标签加载 css 样式
  * 2、引入 postcss-loader 来解决样式兼容性问题，写在 css-loader 之后，预处理器 loader 之前
  * 3、在 package.json 文件中添加 browserslist 来控制样式的兼容性做到什么程度
  *    - "browserslist": ["last 2 version", "> 1%", "not dead"]
@@ -133,6 +133,7 @@ module.exports = {
           /**
            * 过去在 Webpack4 时，我们处理图片资源通过 file-loader 和 url-loader 进行处理
            * 现在 Webpack5 已经将两个 Loader 功能内置到 Webpack 里了，我们只需要简单配置即可处理图片资源
+           * 关键字段：type: 'asset'
            */
           {
             test: /\.(png|jpe?g|gif|webp)$/,
@@ -238,17 +239,18 @@ module.exports = {
     // minimizer 的默认值为 [new TerserWebpackPlugin()]，表示自动压缩 js 代码
     minimizer: [
       /**
-       * 1、在 webpack5 中，可以使用 `...` 语法来访问默认值（即 `terser-webpack-plugin`），扩展现有的 minimizer，对 js 代码进行压缩
+       * 1、在 webpack5 中，可以使用 `...` 语法来访问默认值（即 `terser-webpack-plugin`），扩展现有的 minimizer，对 js 代码进行压缩，
        *    这种情况下 terser-webpack-plugin 不需要安装
-       * 2、如果使用的是 webpack v5 或更高版本，同时希望自定义配置，那么仍需要安装 terser-webpack-plugin
+       * 2、另外，如果使用的是 webpack v5 或更高版本，同时希望自定义配置，那么仍需要安装 terser-webpack-plugin，
        *    如果使用 webpack v4，则必须安装 terser-webpack-plugin v4 的版本
+       * 3、这个地方这么写，主要是为了开启多进程
        */
       // '...',
       new TerserWebpackPlugin({
         // 多进程压缩，手动设置进程数，默认也会开启多进程的，默认数量：os.cpus().length - 1
         parallel: threads,
       }),
-      // 压缩 css 代码，直接写在 plugins 里面也可以，直接 new CssMinimizerPlugin() 即可，规范而言，推荐写在这
+      // 压缩 css 代码，直接写在 plugins 里面也可以，写在这效果也是一样的，规范而言，推荐写在这
       new CssMinimizerPlugin(),
     ],
   },
