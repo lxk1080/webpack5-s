@@ -59,7 +59,12 @@ module.exports = {
      * 根目录，所有文件的输出目录
      */
     path: path.resolve(__dirname, 'dist'),
-    filename: 'js/bundle.[contenthash:8].js',
+    filename: 'js/[name].[contenthash:8].js',
+    /**
+     * 设置通过代码分割功能得到的 chunk 输出的文件名，例如 import() 动态引入文件语法，
+     * 如果不写这个字段，则默认遵循 filename 字段输出的格式，写了就会覆盖掉 filename 的格式
+     */
+    chunkFilename: 'js/[name].[contenthash:8].chunk.js',
     /**
      * webpack5 清空目标文件夹不再需要引入插件
      */
@@ -231,7 +236,10 @@ module.exports = {
      */
     new MiniCssExtractPlugin({
       // 定义输出目录和文件名
-      filename: 'css/main.[contenthash:8].css',
+      filename: 'css/[name].[contenthash:8].css',
+      // 设置通过代码分割功能得到的 chunk 输出的文件名，例如 import() 动态引入文件语法，
+      // 如果不写这个字段，则默认遵循 filename 字段输出的格式，写了就会覆盖掉 filename 的格式
+      chunkFilename: 'css/[name].[contenthash:8].chunk.css',
     }),
   ],
 
@@ -253,5 +261,12 @@ module.exports = {
       // 压缩 css 代码，直接写在 plugins 里面也可以，写在这效果也是一样的，规范而言，推荐写在这
       new CssMinimizerPlugin(),
     ],
+
+    /**
+     * 代码分割
+     */
+    // splitChunks: {
+    //   chunks: 'all',
+    // },
   },
 };

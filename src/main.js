@@ -39,3 +39,22 @@ if (module.hot) {
   module.hot.accept(['./js/count'], () => console.log('count 文件更新了'));
   module.hot.accept(['./js/sum'], () => console.log('sum 文件更新了'));
 }
+
+// 测试按需加载
+setTimeout(() => {
+  /**
+   * 1、这个 import 语法是 webpack 提供的，eslint 默认不识别，需要安装 eslint-plugin-import 插件，并在 .eslintrc.js 中配置
+   *  - 使用 ecmaVersion: 11 这个配置也可以解决 eslint 报错问题
+   * 2、webpackChunkName: "mul"：这是 webpack 动态引入文件命名的方式（魔法注释命名），"mul" 将会作为 [name] 的值显示
+   *  - 可以通过 output.chunkFilename 配置输出文件名的格式
+   */
+  import(/* webpackChunkName: "mul" */ './js/mul').then((mul) => {
+    console.log('动态加载-mul.js', mul(2, 3))
+  })
+  /**
+   * 动态加载 css 文件同理，可以在 MiniCssExtractPlugin 插件中通过 chunkFilename 字段配置输出文件名的格式
+   */
+  import(/* webpackChunkName: "back" */ './css/back.css').then((data) => {
+    console.log('动态加载-back.css', data)
+  })
+}, 2000)
