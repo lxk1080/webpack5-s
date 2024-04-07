@@ -40,8 +40,11 @@
      - @babel/plugin-transform-runtime
        - why：Babel 为编译的每个文件都插入了辅助代码，比如 _extend，使代码体积过大，可以将这些辅助代码作为一个独立模块，来避免重复引入
        - what：禁用了 Babel 自动对每个文件的 runtime 注入，而是引入 @babel/plugin-transform-runtime 并且使所有辅助代码从这里引用
-         - 事实上，这个插件的功能是：防止 babel-polyfill 注入造成全局污染，而自定义 polyfill 方法名，并在编译时使用
-         - 此插件一般用于第三方库的开发，不过这个功能也确实是防止了注入，间接的优化了代码
+         - 这个插件还有个功能：防止 babel-polyfill（core-js）注入造成全局污染。插件会自定义 polyfill 方法名，并在编译时使用
+           - 此功能一般用于第三方库的开发，要使用此功能需要：
+             - 安装 @babel/runtime-corejs3 作为生产依赖（注意：@babel/runtime、@babel/runtime-corejs2、@babel/runtime-corejs3 三者只能用其一）
+             - 对 @babel/plugin-transform-runtime 插件做自定义配置：`{ corejs: 3 }`，具体使用可参考生产配置
+         - 更多使用方法，可以参考 babel 的官方文档：https://babeljs.io/docs/babel-plugin-transform-runtime
        - 开发模式和生产模式都可以用，需要时优化
      - image-minimizer
        - 压缩图片，一般情况下不需要，现在图片一般不会放在本地，都是 CDN 链接，如果本地的静态图片比较多，可以考虑使用

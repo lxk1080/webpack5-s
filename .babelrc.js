@@ -13,6 +13,6 @@ module.exports = {
       corejs: 3,
     }]
   ],
-  // 使用最新的 es6... 语法，还需要别的 polyfill，可以逐个加在 plugins 里
+  // 使用最新的 es6+ 语法，如果还需要别的 polyfill，可以逐个加在 plugins 里，配置的 plugin 会覆盖掉预设里的相同功能
   plugins: [],
 }

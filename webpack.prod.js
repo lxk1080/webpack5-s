@@ -102,7 +102,17 @@ module.exports = {
                 options: {
                   cacheDirectory: true, // 开启 babel 编译缓存，默认缓存路径为 node_modules/.cache
                   cacheCompression: false, // 缓存的文件不要压缩，压缩需要耗费时间
-                  plugins: ["@babel/plugin-transform-runtime"], // 可以减少代码体积
+                  plugins: [
+                    // 可以减少代码体积
+                    // 如果配合以下注释代码使用，则可以使用沙盒环境 polyfill 功能（需要安装 @babel/runtime-corejs3 包作为生产依赖）
+                    //  - 这个 polyfill，不会造成全局污染，一般用于开发第三方库（开发业务型项目还是使用 core-js）
+                    ["@babel/plugin-transform-runtime", {
+                      // absoluteRuntime: false,
+                      // corejs: 3, // 主要是这个字段的配置，其它字段都是些默认值。此字段的默认值是 false，需要配合 @babel/runtime 包使用
+                      // helpers: true,
+                      // regenerator: true,
+                    }]
+                  ],
                 },
               },
             ],
