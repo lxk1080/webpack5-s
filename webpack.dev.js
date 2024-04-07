@@ -2,6 +2,7 @@ const os = require('os');
 const path = require('path');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
 
 // cpu 核数，逻辑核数
 const threads = os.cpus().length;
@@ -198,6 +199,14 @@ module.exports = {
      */
     new HtmlWebpackPlugin({
       template: './index.html',
+    }),
+    /**
+     * 预获取/预加载文件，使用详情可以查看生产配置
+     */
+    new PreloadWebpackPlugin({
+      rel: 'prefetch',
+      // rel: 'preload',
+      // as: 'script',
     }),
   ],
   optimization: {

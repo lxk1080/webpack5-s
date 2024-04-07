@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
+const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin'); // 虽然是 vue 下的一个插件，但可以不使用 vue，单独拿过来用
 
 // cpu 核数，逻辑核数
 const threads = os.cpus().length;
@@ -246,6 +247,21 @@ module.exports = {
       // 设置通过代码分割功能得到的 chunk 输出的文件名，例如 import() 动态引入文件语法，
       // 如果不写这个字段，则默认遵循 filename 字段输出的格式，写了就会覆盖掉 filename 的格式
       chunkFilename: 'css/[name].[contenthash:8].chunk.css',
+    }),
+
+    /**
+     * 1、预获取/预加载文件
+     *  - 使用后，可以让那些按需加载的资源预加载/预获取
+     *  - 构建时会生成类似 <link rel="prefetch" href="login-modal-chunk.js"> 这样的语句，并插入到 html 模板中
+     * 2、两种方式，具体可以看 readme 介绍，或参考 webpack 文档：https://webpack.docschina.org/guides/code-splitting/#prefetchingpreloading-modules
+     *  - 预获取（prefetch）：将来某些导航下可能需要的资源
+     *  - 预加载（preload）：当前导航下可能需要资源
+     * 3、新版 webpack 已经内置了此功能，可以使用魔法注释开启此功能，具体使用参照上面的文档
+     */
+    new PreloadWebpackPlugin({
+      // rel: 'prefetch', // 使用 prefetch 时，不需要 as 字段
+      rel: 'preload',
+      as: 'script',
     }),
   ],
 

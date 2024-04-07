@@ -53,5 +53,24 @@
        - what：将打包生成的文件进行代码分割，生成多个 js 文件，并且按需加载
          - 实现上分成两个小部分，一个是 `import()` 动态引入的语法，另一个是对 `optimization.splitChunks` 的配置
        - 开发模式和生产模式都可以用，尤其是要用到生产模式，优化代码产出
+     - Preload / Prefetch
+       - why：做了代码分割，使用 import 动态导入语法来进行代码按需加载，但是加载速度还不够好，比如：用户点击按钮时才加载这个资源，如果资源体积很大，那么用户会感觉到明显卡顿效果，我们想在浏览器空闲时间，加载后续需要使用的资源。我们就需要用上 Preload 或 Prefetch 技术
+       - what：
+         - 两种方式
+           - `Preload`：预加载，告诉浏览器立即加载资源
+           - `Prefetch`：预获取，告诉浏览器在空闲时才开始加载资源
+         - 共同点
+           - 都只会加载资源，并不执行
+           - 都有缓存
+         - 不同点
+           - Preload 加载优先级高，Prefetch 加载优先级低
+           - Preload 只能加载当前页面需要使用的资源，Prefetch 可以加载当前页面资源，也可以加载下一个页面需要使用的资源
+         - 总结
+           - 当前页面优先级高的资源用 Preload 加载
+           - 将来的页面需要使用的资源用 Prefetch 加载
+         - 它们的兼容性较差，Preload 相对于 Prefetch 兼容性好一点，但现在应该也没多少人用上古浏览器了吧！
+         - 使用后的效果是：可以让 webpack 输出 Resource Hint
+           - 例如：动态加载文件 `import('./path/to/LoginModal.js')`，代码在构建时会生成 `<link rel="prefetch" href="login-modal-chunk.js">` 并追加到页面头部，指示浏览器在闲置时间预获取 login-modal-chunk.js 文件
+       - 开发模式和生产模式都可以用，主要是生产模式，可以提高页面响应速度
 
 
