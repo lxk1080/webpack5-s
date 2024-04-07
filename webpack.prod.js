@@ -354,5 +354,14 @@ module.exports = {
         // },
       },
     },
+
+    /**
+     * 提取 runtime bundle 文件，用于存储 hash 对应关系
+     *  - 在此项目中可以修改 js 目录中的 mul.js 文件做测试
+     */
+    runtimeChunk: {
+      // 定义文件名，会作为 [name] 生成 bundle 文件
+      name: (entryPoint) => `runtime-${entryPoint.name}`,
+    },
   },
 };

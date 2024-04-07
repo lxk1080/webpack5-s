@@ -72,5 +72,24 @@
          - 使用后的效果是：可以让 webpack 输出 Resource Hint
            - 例如：动态加载文件 `import('./path/to/LoginModal.js')`，代码在构建时会生成 `<link rel="prefetch" href="login-modal-chunk.js">` 并追加到页面头部，指示浏览器在闲置时间预获取 login-modal-chunk.js 文件
        - 开发模式和生产模式都可以用，主要是生产模式，可以提高页面响应速度
+     - Network Cache
+       - why：配合 hash 值的变化做浏览器缓存，优化页面加载速度，确保文件内容改变时，hash 值变化，文件内容未变时，hash 值不变
+       - what：
+         - 三种生成 hash 值的方式
+           - fullhash（webpack4 是 hash）
+             - 每次修改任何一个文件，所有文件名的 hash 值都将改变。所以一旦修改了任何一个文件，整个项目的文件缓存都将失效
+             - 对于那些不变的媒体文件适用，例如：图片、视频、字体
+           - chunkhash
+             - 根据不同的入口文件(Entry)进行依赖文件解析、构建对应的 chunk，生成对应的哈希值。我们 js 和 css 是同一个引入，会共享一个 hash 值
+           - contenthash
+             - 根据文件内容生成 hash 值，只有文件内容变化了，hash 值才会变化。所有文件的 hash 值是独享且不同的
+             - 适用于经常修改的文件
+         - 对于我们经常修改的文件，使用 contenthash 可以保证文件在未修改时，其 hash 值不变，但是仍然存在问题：
+           - 假如在我们生成的 bundle 文件中，A 文件依赖于 B 文件，B 文件对应的 module 做修改时，重新打包生成的 B 文件 hash 值会变化，这个正常，但是 A 文件的 hash 值也会变化，这是因为 A 文件依赖于 B 文件，B 文件的文件名发生了变化，所以在 A 文件中的 B 文件的引用也发生了变化，这就间接的导致了 A 文件的 hash 值也发生了变化，但是我们不希望 A 文件的 hash 发生变化，怎么办？
+           - 解决方法就是：将 hash 值单独保管在一个 runtime 文件中
+           - 我们最终输出三个文件：A、B、runtime。当 B 文件发生变化，变化的是 B 和 runtime 文件，A 不变
+           - runtime 文件只保存文件的 hash 值和它们与文件的关系，整个文件体积就比较小，所以变化重新请求的代价也小，并且不影响页面
+           - 只需要对 `optimization.runtimeChunk` 进行配置即可
+       - 主要是生产模式使用，开发模式感觉用了也没啥用，开发环境主要使用热更新
 
 

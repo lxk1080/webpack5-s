@@ -40,7 +40,8 @@ module.exports = {
     // 热替换，默认开启的，css 可以直接生效，因为 style-loader 做了处理
     // 但是 js 需要另外配置，例如：module.hot.accept(['./xxx.js'])
     // 实际上开发中，有很多 js 文件，一般不会用官方给的这种定义方式（否则写到麻了）
-    // 会使用其他 loader 来解决，比如：vue-loader, react-hot-loader
+    //  - 另外，module.hot.accept() 不传参数也不建议使用，这种热更新会把修改文件中的所有代码重新执行一遍，会带来一定的问题
+    // 建议使用其他 loader 来解决，比如：vue-loader, react-hot-loader
     hot: true,
   },
   module: {
