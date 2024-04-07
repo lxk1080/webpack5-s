@@ -66,6 +66,12 @@ module.exports = {
      */
     chunkFilename: 'js/[name].[contenthash:8].chunk.js',
     /**
+     * 通过 type: asset 方式处理的资源文件统一命名（图片、视频、字体）
+     *  - 此处是默认命名，如果下面有单独写 filename，就会覆盖掉这个默认的
+     *  - 我的建议是单独命名，资源文件类型不一样，放到同一个目录下不好查找
+     */
+    assetModuleFilename: 'assets/[contenthash:8][ext][query]',
+    /**
      * webpack5 清空目标文件夹不再需要引入插件
      */
     clean: true,
@@ -251,7 +257,7 @@ module.exports = {
        *    这种情况下 terser-webpack-plugin 不需要安装
        * 2、另外，如果使用的是 webpack v5 或更高版本，同时希望自定义配置，那么仍需要安装 terser-webpack-plugin，
        *    如果使用 webpack v4，则必须安装 terser-webpack-plugin v4 的版本
-       * 3、这个地方这么写，主要是为了开启多进程
+       * 3、压缩 js 代码，这个地方这么写，主要是为了开启多进程
        */
       // '...',
       new TerserWebpackPlugin({
@@ -265,8 +271,72 @@ module.exports = {
     /**
      * 代码分割
      */
-    // splitChunks: {
-    //   chunks: 'all',
-    // },
+    splitChunks: {
+      // initial 入口 chunk，对于异步导入的文件不处理
+      // async 异步 chunk，只对异步导入的文件处理
+      // all 全部 chunk 都处理
+      // 一般情况下使用 all，并且对于 SPA 项目来说，如果没有什么特别的配置，就写一个 chunks: 'all' 即可，其它全部使用默认
+      chunks: 'all',
+
+      /**
+       * 以下是默认值
+       */
+      // chunks: 'async', // 只对异步 chunk 进行处理
+      // minSize: 20000, // 生成 chunk 的最小体积（以 bytes 为单位）
+      // minRemainingSize: 0, // 确保最后提取的文件大小不能为 0，通过确保拆分后剩余的最小 chunk 体积超过限制来避免大小为零的模块
+      // minChunks: 1, // 至少被引用的次数，满足条件才会被代码分割（这个引用的次数指的是：被不同的入口文件引用的次数，所以单入口项目中文件被引入的次数永远为 1）
+      // maxAsyncRequests: 30, // 按需加载时最大并行请求数量
+      // maxInitialRequests: 30, // 入口 js 文件最大并行请求数量
+      // enforceSizeThreshold: 50000, // 超过 50kb 一定会单独打包（此时会忽略 minRemainingSize、maxAsyncRequests、maxInitialRequests）
+      // // 缓存组可以继承和/或覆盖来自 splitChunks.* 的任何选项，但是 test、priority 和 reuseExistingChunk 只能在缓存组级别上进行配置
+      // // 缓存组，配置哪些模块要打包到一个组
+      // cacheGroups: {
+      //   // 抽取第三方代码
+      //   defaultVendors: { // 组名，这个名称并没有什么实际的用处，只是用来区分不同的组
+      //     test: /[\\/]node_modules[\\/]/, // 正则匹配，控制此缓存组选择的模块，省略它会选择所有模块。这个也可以写成一个函数，提供更多的选择
+      //     priority: -10, // 权重（值越大优先级越高），自定义组的优先级默认值为 0
+      //     reuseExistingChunk: true, // 如果当前 chunk 包含已从主 bundle 中拆分出的模块，则该模块将被重用，而不是生成新的模块
+      //   },
+      //   // 抽取公共代码（只有在多入口时才有用）
+      //   default: {
+      //     minChunks: 2, // 这里的 minChunks 会覆盖掉上面默认的，其他没有写的配置会使用上面的默认值
+      //     priority: -20,
+      //     reuseExistingChunk: true,
+      //   },
+      // },
+
+      /**
+       * 自定义缓存组，没写的字段使用默认配置，写了的字段会覆盖掉默认配置
+       *  - 这三个字段 test、priority 和 reuseExistingChunk 只能在缓存组级别上进行配置
+       */
+      cacheGroups: {
+        // 分割单个文件，这个自定义组没写 priority，所以优先级默认为 0
+        hundred: {
+          name: 'hundred', // 生成的 bundle 名称
+          minSize: 0, // 单文件体积很小，所以改下所允许的最小文件体积
+          test: /hundred\.js/, // 匹配文件
+          reuseExistingChunk: true,
+        },
+        // 覆盖掉默认的 defaultVendors 分组
+        defaultVendors: {
+          name: 'vendors', // 给输出的 bundle 起个名
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          reuseExistingChunk: true,
+        },
+        // 抽取出一个公共文件（注意：并不是公共代码，单页面 SPA 项目中只有一个入口，所以不存在公共代码）
+        // 注意：其实这个配置在 SPA 中是没必要的，因为 webpack 会根据默认配置或 import() 语法默认做分包
+        //  - 因为这个组我们给了名字 common，造成的后果是：入口文件中引入的所有文件（不论是动态引入还是静态引入）都会被打到这个包中
+        //  - 如果不给名字，就还是按默认的分包方式
+        // 这里只是做演示，实际项目中一般不需要这么做
+        // common: {
+        //   name: 'common', // 生成的 bundle 名称
+        //   minSize: 0, // 因为这个 demo 的文件体积比较小，所以改下打包生成的最小文件体积
+        //   minChunks: 1, // 单入口的 SPA 项目，文件只可能被引用 1 次
+        //   priority: -20,
+        //   reuseExistingChunk: true,
+        // },
+      },
+    },
   },
 };

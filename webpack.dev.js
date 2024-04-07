@@ -200,4 +200,12 @@ module.exports = {
       template: './index.html',
     }),
   ],
+  optimization: {
+    /**
+     * 代码分割，使用详情可以查看生产配置
+     */
+    splitChunks: {
+      chunks: 'all',
+    },
+  },
 };

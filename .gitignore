@@ -13,4 +13,4 @@ yarn-error.log*
 *.njsproj
 *.sln
 
-/webpack_docs/docs/.vuepress/.temp/*
+webpack_docs/docs/.vuepress/.temp/
