@@ -65,3 +65,11 @@ setTimeout(() => {
 
 // 测试第三方库代码分割
 console.log(_.random(0, 5))
+
+// 测试 core-js polyfill 按需引入
+new Promise((resolve) => {
+  setTimeout(() => resolve(null), 1000)
+}).then(() => {
+  console.log('Promise resolved!')
+})
+console.log([1,2,3,4,5].includes(5))

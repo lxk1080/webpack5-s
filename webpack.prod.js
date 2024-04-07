@@ -218,8 +218,8 @@ module.exports = {
       cache: true,
       // 缓存目录，绝对路径，设置缓存文件的位置和 babel 缓存一起
       cacheLocation: path.resolve(__dirname, './node_modules/.cache/.eslintcache'),
-      // 开启多进程并设置进程数
-      threads,
+      // 开启多进程并设置进程数（注意：开启多进程后，eslint 可能会忽略掉一些错误，打包畅然无阻）
+      // threads,
     }),
 
     /**

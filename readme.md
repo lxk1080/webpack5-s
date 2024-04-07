@@ -91,5 +91,10 @@
            - runtime 文件只保存文件的 hash 值和它们与文件的关系，整个文件体积就比较小，所以变化重新请求的代价也小，并且不影响页面
            - 只需要对 `optimization.runtimeChunk` 进行配置即可
        - 主要是生产模式使用，开发模式感觉用了也没啥用，开发环境主要使用热更新
+     - Core-js
+       - why：这个其实不是什么优化性能，而是必须要做的事。我们使用 babel 对 ES6 代码进行处理，它能将 ES6 语法进行编译转换，比如箭头函数、点点点运算符等。但是如果是 async 函数、promise 对象、数组的一些方法（includes）等，它没办法处理。也就是说 babel 只能处理 ES6 的新语法，而不能处理新的 API。所以此时我们编译后的 js 代码仍然存在兼容性问题，一旦遇到低版本浏览器就会直接报错
+       - what：core-js 是专门用来做 ES6 以及以上 API 的 polyfill（补丁）
+         - 配置自动按需引入，参见：`.babelrc.js` 文件
+         - 要注意 package.json 文件中 browserslist 的配置，否则可能无法引入 polyfill 代码
 
 

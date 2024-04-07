@@ -10,6 +10,7 @@ module.exports = {
   env: {
     node: true, // 启用 node 中全局变量，例如：console
     browser: true, // 启用浏览器中全局变量，例如：document
+    es6: true, // 启用 es6 中全局变量，例如：Promise
   },
   parser: "babel-eslint",
   parserOptions: {
