@@ -234,13 +234,12 @@ module.exports = {
     }),
 
     /**
-     * 1、生成的 script 默认会加在 head 里（尾部），并且携带有 defer 属性
-     *    defer：
-     *      加载后续文档的过程和 js 脚本的加载是并行进行的（异步），
-     *      但 js 脚本的执行需要等到文档所有元素解析渲染完成之后，DOMContentLoaded 事件触发之前
-     *
-     * 2、了解更多配置选项，直接去：https://github.com/jantimon/html-webpack-plugin
-     *
+     * 1、打包后的 html 文件有两个特点：
+     *  - 内容和源文件一致
+     *  - 自动引入打包生成的 js 等资源
+     * 2、生成的 script 默认会加在 head 里（尾部），并且携带有 defer 属性
+     *  - defer：加载后续文档的过程和 js 脚本的加载是并行进行的（异步），但 js 脚本的执行需要等到文档所有元素解析渲染完成之后，DOMContentLoaded 事件触发之前
+     * 3、了解更多配置选项，去网址：https://github.com/jantimon/html-webpack-plugin
      */
     new HtmlWebpackPlugin({
       template: './index.html',
