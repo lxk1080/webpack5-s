@@ -20,4 +20,7 @@ module.exports = {
   rules: {
     "no-var": 2, // 不能使用 var 定义变量
   },
+  globals: {
+    APP_ENV: "readonly",
+  },
 };

@@ -48,8 +48,10 @@ setTimeout(() => {
    *  - 使用 ecmaVersion: 11 这个配置也可以解决 eslint 报错问题
    * 2、webpackChunkName: "mul"：这是 webpack 动态引入文件命名的方式（魔法注释命名），"mul" 将会作为 [name] 的值显示
    *  - 可以通过 output.chunkFilename 配置输出文件名的格式
-   *  - 如果多个动态引入的 webpackChunkName 相同，那么这几个 module 都将会打包到这个 bundle 文件中
+   *  - 如果多个动态引入的文件 webpackChunkName 相同，那么这几个 module 都将会打包到这个 bundle 文件中
    *  - 实际使用中我觉得还是不要自定义命名的好，一方面是麻烦，二方面是防止命名重复，打包到了一个 bundle 文件中（除非是刻意打包到一个文件）
+   * 3、关于魔法注释的使用，可以参考文档：https://webpack.docschina.org/api/module-methods/#magic-comments
+   *  - 如果想同时写多个魔法注释，中间用英文逗号隔开即可
    */
   import(/* webpackChunkName: "mul" */ './js/mul').then((data) => {
     const mul = data.default
@@ -76,13 +78,17 @@ console.log([1,2,3,4,5].includes(5))
 
 // 测试 PWA 离线访问功能
 //  - 下面代码都是照搬官网的：https://webpack.docschina.org/guides/progressive-web-application/#registering-our-service-worker
-//  - 打包后会构建生成 PWA 相关文件
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js').then(registration => {
-      console.log('SW registered: ', registration)
-    }).catch(registrationError => {
-      console.log('SW registration failed: ', registrationError)
+//  - 打包后会构建生成 PWA 相关文件到 dist 目录中
+//  - 这边区分了下环境，开发模式下，没引入对应的插件，运行会报错，所以就不要注册了，而且本来这功能在开发模式下就没用
+console.log('APP_ENV ==>', APP_ENV)
+if (APP_ENV !== 'dev') {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js').then(registration => {
+        console.log('SW registered: ', registration)
+      }).catch(registrationError => {
+        console.log('SW registration failed: ', registrationError)
+      })
     })
-  })
+  }
 }

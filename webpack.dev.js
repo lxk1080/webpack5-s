@@ -1,5 +1,6 @@
 const os = require('os');
 const path = require('path');
+const webpack = require('webpack');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
@@ -7,6 +8,26 @@ const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
 // cpu 核数，逻辑核数
 const threads = os.cpus().length;
 console.log('threads ==>', threads);
+
+const getStyleLoaders = (preProcessor) => {
+  return [
+    'style-loader',
+    'css-loader',
+    {
+      loader: 'postcss-loader',
+      options: {
+        postcssOptions: {
+          plugins: [
+            // 能解决大多数样式兼容性问题
+            'postcss-preset-env',
+          ],
+        },
+      },
+    },
+    preProcessor,
+    // 如果没传 preProcessor，则 preProcessor 为 undefined，过滤掉
+  ].filter(Boolean);
+};
 
 module.exports = {
   mode: 'development',
@@ -82,7 +103,7 @@ module.exports = {
            */
           {
             test: /\.css$/,
-            use: ['style-loader', 'css-loader'], // 从右到左执行
+            use: getStyleLoaders(), // 从右到左执行
           },
 
           /**
@@ -90,7 +111,7 @@ module.exports = {
            */
           {
             test: /\.less$/,
-            use: ['style-loader', 'css-loader', 'less-loader'],
+            use: getStyleLoaders('less-loader'),
           },
 
           /**
@@ -99,7 +120,7 @@ module.exports = {
            */
           {
             test: /\.s[ac]ss$/,
-            use: ['style-loader', 'css-loader', 'sass-loader'],
+            use: getStyleLoaders('sass-loader'),
           },
 
           /**
@@ -107,7 +128,7 @@ module.exports = {
            */
           {
             test: /\.styl$/,
-            use: ['style-loader', 'css-loader', 'stylus-loader'],
+            use: getStyleLoaders('stylus-loader'),
           },
 
           /**
@@ -201,6 +222,16 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './index.html',
     }),
+
+    /**
+     * 定义 node 环境下的全局变量，供编译时使用
+     *  - 注意：不能定义 "process.env.NODE_ENV" 为 key，与 webpack5 的默认配置有冲突
+     *    - 可以参考文章：https://www.cnblogs.com/dll-ft/p/16150486.html
+     */
+    new webpack.DefinePlugin({
+      'APP_ENV': JSON.stringify('dev'),
+    }),
+
     /**
      * 预获取/预加载文件，使用详情可以查看生产配置
      */

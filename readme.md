@@ -47,14 +47,15 @@
          - 更多使用方法，可以参考 babel 的官方文档：https://babeljs.io/docs/babel-plugin-transform-runtime
        - 开发模式和生产模式都可以用，需要时优化
      - image-minimizer
-       - 压缩图片，一般情况下不需要，现在图片一般不会放在本地，都是 CDN 链接，如果本地的静态图片比较多，可以考虑使用
+       - 压缩图片，一般情况下不需要，现在图片一般不会放在本地，都是 CDN 链接，如果本地的静态图片比较多，可以考虑使用（本项目中没有提供示例，需要的话看文档）
          - 一般来讲公司都有 CMS（内容管理系统），图片 path 不变，在不同的环境匹配不同的域名即可
-       - 主要使用插件：image-minimizer-webpack-plugin，通过安装不同的其他包，区分为两种模式：无损压缩和有损压缩
+       - 主要使用插件：image-minimizer-webpack-plugin，通过安装不同的其他包，区分为两种模式：无损压缩和有损压缩（相关的包可能很难下载下来。。）
    - 优化代码运行性能
      - Code Split
        - why：打包代码时会将所有 js 文件打包到一个文件中，体积太大了
        - what：将打包生成的文件进行代码分割，生成多个 js 文件，并且按需加载
          - 实现上分成两个小部分，一个是 `import()` 动态引入的语法，另一个是对 `optimization.splitChunks` 的配置
+         - 在 import 语法中有用到魔法注释，关于魔法注释，可以参考文档：https://webpack.docschina.org/api/module-methods/#magic-comments
        - 开发模式和生产模式都可以用，尤其是要用到生产模式，优化代码产出
      - Preload / Prefetch
        - why：做了代码分割，使用 import 动态导入语法来进行代码按需加载，但是加载速度还不够好，比如：用户点击按钮时才加载这个资源，如果资源体积很大，那么用户会感觉到明显卡顿效果，我们想在浏览器空闲时间，加载后续需要使用的资源。我们就需要用上 Preload 或 Prefetch 技术
@@ -74,14 +75,20 @@
          - 它们的兼容性较差，Preload 相对于 Prefetch 兼容性好一点，但现在应该也没多少人用上古浏览器了吧！
          - 使用后的效果是：可以让 webpack 输出 Resource Hint
            - 例如：动态加载文件 `import('./path/to/LoginModal.js')`，代码在构建时会生成 `<link rel="prefetch" href="login-modal-chunk.js">` 并追加到页面头部，指示浏览器在闲置时间预获取 login-modal-chunk.js 文件
+         - 本示例用的是 @vue/preload-webpack-plugin 插件，其实 webpack5 已经内置了此功能（但似乎不能全局配置）
+           - 注意：使用本插件会在打包的时候直接插入 link 标签到 html 模板中，但是内置方法不会直接插，而是在代码运行的时候通过 js 控制插入
+           - 可参考官方文档：https://webpack.docschina.org/guides/code-splitting/#prefetchingpreloading-modules
        - 开发模式和生产模式都可以用，主要是生产模式，可以提高页面响应速度
      - Network Cache
        - why：配合 hash 值的变化做浏览器缓存，优化页面加载速度，确保文件内容改变时，hash 值变化，文件内容未变时，hash 值不变
        - what：
          - 三种生成 hash 值的方式
-           - fullhash（webpack4 是 hash）
+           - fullhash（webpack4 是 hash，在 webpack5 中 hash 已弃用）
              - 每次修改任何一个文件，所有文件名的 hash 值都将改变。所以一旦修改了任何一个文件，整个项目的文件缓存都将失效
-             - 对于那些不变的媒体文件适用，例如：图片、视频、字体
+             - 注意这个 fullhash 只能用于 “编译层面” 的替换，不能用于输出的媒体文件名替换
+             - 输出的媒体文件，例如图片、视频、字体等 bundle 文件中，文件名可以使用模块层面的 hash 做替换
+               - 其实也可以使用 contenthash 做替换，但考虑到一般来说，媒体文件的内容是不会被修改的，不用考虑缓存问题，所以直接使用 hash 即可
+             - 具体使用可以参考官方文档：https://webpack.docschina.org/configuration/output/#template-strings
            - chunkhash
              - 根据不同的入口文件(Entry)进行依赖文件解析、构建对应的 chunk，生成对应的哈希值。我们 js 和 css 是同一个引入，会共享一个 hash 值
            - contenthash
@@ -107,8 +114,22 @@
          - 在入口文件注册 Service Worker
        - 用于生产模式，在断网时供用户使用离线功能
 
-5. 构建流行框架的 Webpack 配置
-    - React
+5. 构建流行框架的脚手架（非命令式）
+    - React-Cli
+      - 项目路径：react-cli
+      - webpack 配置：
+        - 公共改动：
+          - 引入 cross-env 设置环境变量
+          - 使用 babel-loader 处理 jsx 文件，使用预设：。。。
+          - eslint 配置，使用 extends：。。。
+          - 使用 resolve.extensions 自动补全
+          - 使用路由懒加载：React.lazy、React.Suspense
+        - 开发模式改动：
+          - 激活 js 热更新（HMR），需要插件：。。。
+          - devServer 兜底 index.html 配置：。。。
+        - 生产模式改动：
+          - 引入 copy-webpack-plugin，复制静态资源
+          - 使用 splitChunks 分割代码（antd、react、其它）
     - Vue
 
 

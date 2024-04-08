@@ -1,5 +1,6 @@
 const os = require('os');
 const path = require('path');
+const webpack = require('webpack');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -45,14 +46,17 @@ const getStyleLoaders = (preProcessor) => {
 };
 
 module.exports = {
+  // 生产模式下，会自动开启 Tree Shaking 功能
   mode: 'production',
   // 生产模式一般不需要代码映射，如果需要，就用这个，包含行/列映射，但是打包编译速度慢
   devtool: 'source-map',
+  // 关闭性能分析，能稍微提高一点点打包速度（关闭后就不会提示你类似什么xx模块太大的问题，没啥大用）
+  performance: false,
   entry: {
     /**
      * 1、注意这个地方的相对路径
-     *    - node 里面文件操作的相对路径，相对的不是这个文件，而是执行 node 命令所处的终端路径
-     *    - 但是 node 模块中的路径标识是相对于当前文件模块本身的
+     *    - node 里面文件操作的相对路径，相对的不是这个文件，而是执行 node 命令所处的终端路径（所以这里最好使用 path.resolve 转化为绝对路径）
+     *    - 但是 node 模块中的路径标识是相对于当前文件模块本身的（这里顺便一提，加深下印象）
      */
     main: './src/main.js',
   },
@@ -72,7 +76,7 @@ module.exports = {
      *  - 此处是默认命名，如果下面有单独写 filename，就会覆盖掉这个默认的
      *  - 我的建议是单独命名，资源文件类型不一样，放到同一个目录下不好查找
      */
-    assetModuleFilename: 'assets/[contenthash:8][ext][query]',
+    assetModuleFilename: 'assets/[hash:8][ext][query]',
     /**
      * webpack5 清空目标文件夹不再需要引入插件
      */
@@ -174,12 +178,12 @@ module.exports = {
             generator: {
               /**
                * 将图片文件输出到 imgs 目录中
-               * [contenthash:8]: hash 值取前 8 位
+               * [hash:8]: hash 值取前 8 位
                * [ext]: 使用之前的文件扩展名
                * [query]: 添加之前的 query 参数，注意这个参数不会加在输出的文件上，在请求文件的时候会自动加上
-               * @example filename: "imgs/[contenthash:8].png",
+               * @example filename: "imgs/[hash:8].png",
                */
-              filename: 'imgs/[contenthash:8][ext][query]',
+              filename: 'imgs/[hash:8][ext][query]',
             },
           },
 
@@ -195,7 +199,7 @@ module.exports = {
             type: 'asset/resource',
             // 可以编程，对不同的文件类型设置不同的目标目录
             // generator: {
-            //   filename: "fonts/[contenthash:8][ext]",
+            //   filename: "fonts/[hash:8][ext]",
             // },
             generator: {
               filename: (content) => {
@@ -203,9 +207,9 @@ module.exports = {
                   content.filename.includes('.ttf') ||
                   content.filename.includes('.woff')
                 ) {
-                  return 'fonts/[contenthash:8][ext]'
+                  return 'fonts/[hash:8][ext]'
                 }
-                return 'media/[contenthash:8][ext]'
+                return 'media/[hash:8][ext]'
               }
             },
           },
@@ -246,6 +250,15 @@ module.exports = {
     }),
 
     /**
+     * 定义 node 环境下的全局变量，供编译时使用
+     *  - 注意：不能定义 "process.env.NODE_ENV" 为 key，与 webpack5 的默认配置有冲突
+     *    - 可以参考文章：https://www.cnblogs.com/dll-ft/p/16150486.html
+     */
+    new webpack.DefinePlugin({
+      'APP_ENV': JSON.stringify('prod'),
+    }),
+
+    /**
      * 1、Css 文件目前被打包到 js 文件中，当 js 文件加载时，会创建一个 style 标签来生成样式 ，
      *    这样对于网站来说，会出现闪屏现象，用户体验不好，我们应该是单独的 Css 文件，通过 link 标签加载性能才好
      * 2、mini-css-extract-plugin 让我们可以提取 css 为一个单独的文件
@@ -267,11 +280,13 @@ module.exports = {
      *  - 预获取（prefetch）：将来某些导航下可能需要的资源
      *  - 预加载（preload）：当前导航下可能需要资源
      * 3、新版 webpack 已经内置了此功能，可以使用魔法注释开启此功能，具体使用参照上面的文档
+     *  - 使用内置的方式在构建时不会将 link 标签插入到 html 模板中，而是在代码运行时通过 js 插入
+     *  - 如果插件和内置方式同时使用，二者并不会冲突，会将各自生成的 link 标签分别插入（推荐使用插件的方式！可以全局配置）
      */
     new PreloadWebpackPlugin({
       // rel: 'prefetch', // 使用 prefetch 时，不需要 as 字段
       rel: 'preload',
-      as: 'script',
+      // as: 'script', // 不给 as 字段，插件会自动识别文件类型
     }),
 
     /**
@@ -287,6 +302,8 @@ module.exports = {
   ],
 
   optimization: {
+    // 控制是否需要做压缩（可以在调试时使用）
+    minimize: true,
     // minimizer 的默认值为 [new TerserWebpackPlugin()]，表示自动压缩 js 代码
     minimizer: [
       /**
@@ -377,7 +394,7 @@ module.exports = {
     },
 
     /**
-     * 提取 runtime bundle 文件，用于存储 hash 对应关系
+     * 提取 runtime bundle 文件，用于存储输出的 bundle 文件与其 hash 值的对应关系
      *  - 在此项目中可以修改 js 目录中的 mul.js 文件做测试
      */
     runtimeChunk: {
