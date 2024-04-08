@@ -73,3 +73,16 @@ new Promise((resolve) => {
   console.log('Promise resolved!')
 })
 console.log([1,2,3,4,5].includes(5))
+
+// 测试 PWA 离线访问功能
+//  - 下面代码都是照搬官网的：https://webpack.docschina.org/guides/progressive-web-application/#registering-our-service-worker
+//  - 打包后会构建生成 PWA 相关文件
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').then(registration => {
+      console.log('SW registered: ', registration)
+    }).catch(registrationError => {
+      console.log('SW registration failed: ', registrationError)
+    })
+  })
+}

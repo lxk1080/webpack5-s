@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin'); // 虽然是 vue 下的一个插件，但可以不使用 vue，单独拿过来用
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 // cpu 核数，逻辑核数
 const threads = os.cpus().length;
@@ -106,7 +107,7 @@ module.exports = {
                     // 可以减少代码体积
                     // 如果配合以下注释代码使用，则可以使用沙盒环境 polyfill 功能（需要安装 @babel/runtime-corejs3 包作为生产依赖）
                     //  - 这个 polyfill，不会造成全局污染，一般用于开发第三方库（开发业务型项目还是使用 core-js）
-                    ["@babel/plugin-transform-runtime", {
+                    ['@babel/plugin-transform-runtime', {
                       // absoluteRuntime: false,
                       // corejs: 3, // 主要是这个字段的配置，其它字段都是些默认值。此字段的默认值是 false，需要配合 @babel/runtime 包使用
                       // helpers: true,
@@ -272,6 +273,17 @@ module.exports = {
       // rel: 'prefetch', // 使用 prefetch 时，不需要 as 字段
       rel: 'preload',
       as: 'script',
+    }),
+
+    /**
+     * 使用 PWA 离线缓存功能（除了使用这个插件，还需要在入口文件写上注册 Service Worker 的代码）
+     *  - 下面的代码都是照搬官网的：https://webpack.docschina.org/guides/progressive-web-application/#adding-workbox
+     */
+    new WorkboxPlugin.GenerateSW({
+      // 这些选项帮助快速启用 ServiceWorkers
+      // 不允许遗留任何“旧的” ServiceWorkers
+      clientsClaim: true,
+      skipWaiting: true,
     }),
   ],
 

@@ -99,5 +99,12 @@
        - what：core-js 是专门用来做 ES6 以及以上 API 的 polyfill（补丁）
          - 配置自动按需引入，参见：`.babelrc.js` 文件
          - 要注意 package.json 文件中 browserslist 的配置，否则可能无法引入 polyfill 代码
+     - PWA
+       - why：开发 Web App 项目，项目一旦处于网络离线情况，就没法访问了，如果想给项目提供离线体验的话，就可用上 PWA
+       - what：渐进式网络应用程序（progressive web application - PWA）：是一种可以提供类似于 native app（原生应用程序）体验的 Web App 的技术，最重要的是，在离线（offline）时应用程序能够继续运行离线功能（不可能完整的，没网你还想咋样！），内部通过 Service Worker 技术实现
+       - how：参考官方文档：https://webpack.docschina.org/guides/progressive-web-application/
+         - 添加 Workbox 插件（workbox-webpack-plugin）
+         - 在入口文件注册 Service Worker
+       - 用于生产模式，在断网时供用户使用离线功能
 
 
