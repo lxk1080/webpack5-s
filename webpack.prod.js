@@ -371,6 +371,13 @@ module.exports = {
           test: /hundred\.js/, // 匹配文件
           reuseExistingChunk: true,
         },
+        // 提取兼容性代码输出为一个 bundle
+        polyfill: {
+          name: 'polyfill', // 给输出的 bundle 起个名
+          test: /[\\/]node_modules[\\/]core-js[\\/]/,
+          priority: -5,
+          reuseExistingChunk: true,
+        },
         // 覆盖掉默认的 defaultVendors 分组
         defaultVendors: {
           name: 'vendors', // 给输出的 bundle 起个名
@@ -399,7 +406,7 @@ module.exports = {
      */
     runtimeChunk: {
       // 定义文件名，会作为 [name] 生成 bundle 文件
-      name: (entryPoint) => `runtime-${entryPoint.name}`,
+      name: (entryPoint) => `runtime-hash-${entryPoint.name}`,
     },
   },
 };
