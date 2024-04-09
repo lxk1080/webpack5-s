@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx webpack serve --config ./webpack.dev.js",
     "build": "npx webpack --config ./webpack.prod.js",
-    "docs": "cd ./webpack_docs && npm start"
+    "docs": "cd ./webpack_docs && npm start",
+    "dev:react": "cd ./react-cli && npm run dev",
+    "build:react": "cd ./react-cli && npm run build"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +27,7 @@
     "@babel/preset-env": "^7.18.6",
     "@vue/preload-webpack-plugin": "^2.0.0",
     "babel-loader": "^8.2.5",
+    "copy-webpack-plugin": "^10.2.4",
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^4.0.0",

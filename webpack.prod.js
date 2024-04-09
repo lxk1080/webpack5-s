@@ -8,6 +8,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin'); // 虽然是 vue 下的一个插件，但可以不使用 vue，单独拿过来用
 const WorkboxPlugin = require('workbox-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // cpu 核数，逻辑核数
 const threads = os.cpus().length;
@@ -54,9 +55,11 @@ module.exports = {
   performance: false,
   entry: {
     /**
-     * 1、注意这个地方的相对路径
-     *    - node 里面文件操作的相对路径，相对的不是这个文件，而是执行 node 命令所处的终端路径（所以这里最好使用 path.resolve 转化为绝对路径）
-     *    - 但是 node 模块中的路径标识是相对于当前文件模块本身的（这里顺便一提，加深下印象）
+     * 1、定义入口，可以定义多个入口，每一个入口对应一个 chunk，每一个 chunk 都会输出为一个 bundle 文件
+     *    - 注意：node 里面文件操作的相对路径，相对的不是这个文件，而是执行 node 命令所处的终端路径
+     *      - 所以这里最好使用 path.resolve 转化为绝对路径（相对于当前文件），以兼容当前文件所在文件夹路径与 node 命令所处的终端路径不一致的情况
+     *      - 不过使用这种相对终端路径也有个好处，就是不管你文件在哪，只要终端路径不变，都能运行，而使用绝对路径，如果当前文件位置变了，那又得改相对位置
+     *      - 另外，node 模块中的 require("路径标识") 是相对于当前文件模块本身的（这里顺便一提，加深下印象）
      */
     main: './src/main.js',
   },
@@ -65,15 +68,18 @@ module.exports = {
      * 根目录，所有文件的输出目录
      */
     path: path.resolve(__dirname, 'dist'),
+    /**
+     * 初始 chunk 的输出文件名，也是每个输出 bundle 的默认名称
+     */
     filename: 'js/[name].[contenthash:8].js',
     /**
-     * 设置通过代码分割功能得到的 chunk 输出的文件名，例如 import() 动态引入文件语法，
+     * 此字段决定了非初始（non-initial）chunk 文件的名称，例如 import() 动态导入文件语法得到的 chunk 输出的文件名
      * 如果不写这个字段，则默认遵循 filename 字段输出的格式，写了就会覆盖掉 filename 的格式
      */
     chunkFilename: 'js/[name].[contenthash:8].chunk.js',
     /**
      * 通过 type: asset 方式处理的资源文件统一命名（图片、视频、字体）
-     *  - 此处是默认命名，如果下面有单独写 filename，就会覆盖掉这个默认的
+     *  - 此处是默认命名，如果在下面的处理中有单独写 filename，就会覆盖掉这个默认的
      *  - 我的建议是单独命名，资源文件类型不一样，放到同一个目录下不好查找
      */
     assetModuleFilename: 'assets/[hash:8][ext][query]',
@@ -247,6 +253,8 @@ module.exports = {
      */
     new HtmlWebpackPlugin({
       template: './index.html',
+      // 设置导航栏图标，为了演示 CopyWebpackPlugin 的功能，就不在这里定义了
+      // favicon: './src/public/favicon.ico',
     }),
 
     /**
@@ -267,7 +275,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       // 定义输出目录和文件名
       filename: 'css/[name].[contenthash:8].css',
-      // 设置通过代码分割功能得到的 chunk 输出的文件名，例如 import() 动态引入文件语法，
+      // 此字段决定了非初始（non-initial）chunk 文件的名称，例如 import() 动态导入文件语法得到的 chunk 输出的文件名
       // 如果不写这个字段，则默认遵循 filename 字段输出的格式，写了就会覆盖掉 filename 的格式
       chunkFilename: 'css/[name].[contenthash:8].chunk.css',
     }),
@@ -298,6 +306,50 @@ module.exports = {
       // 不允许遗留任何“旧的” ServiceWorkers
       clientsClaim: true,
       skipWaiting: true,
+    }),
+
+    /**
+     * 复制静态资源
+     *  - 更多使用方法，可以参考官方文档：https://webpack.docschina.org/plugins/copy-webpack-plugin/
+     */
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, './src/public/favicon.ico'),
+          to: path.resolve(__dirname, './dist'),
+
+          /**
+           * 使用 context 指定路径时，后面的 from 就需要定义基于 context 的相对路径，可以使用 * 号
+           * 不使用 context，只使用 from 时，使用 * 号没有效果（测试下来没啥效果）
+           * 总结：文件明确时直接使用 from，文件不明确时，使用 context 和 from 的配合
+           */
+          // context: path.resolve(__dirname, "./src/public"),
+          // from: "./**/*",
+          // to: path.resolve(__dirname, './dist'),
+          /**
+           * 解释 to 这个字段是啥，虽然没有后缀，但也许是个文件呢，默认会自动识别
+           */
+          // toType: "dir",
+          /**
+           * 如果文件没找着，不生成错误
+           */
+          // noErrorOnMissing: true,
+          /**
+           * 配置 glob 模式匹配
+           *  - 配置 ignore 字段：复制时，忽略某些文件，注意，必须使用 ** 开头的格式
+           */
+          // globOptions: {
+          //   ignore: ["**/index.html"],
+          // },
+          /**
+           * 配置资源的信息
+           *  - 下面的 minimized 设置为 true，代表已经压缩过，这样当 terser 做压缩的时候，会跳过这个文件
+           */
+          // info: {
+          //   minimized: true,
+          // },
+        },
+      ],
     }),
   ],
 
@@ -362,6 +414,7 @@ module.exports = {
       /**
        * 自定义缓存组，没写的字段使用默认配置，写了的字段会覆盖掉默认配置
        *  - 这三个字段 test、priority 和 reuseExistingChunk 只能在缓存组级别上进行配置
+       *  - 分割出来的 bundle 会根据优先级按顺序插入到 html 模板中，优先级越高，越先插入
        */
       cacheGroups: {
         // 分割单个文件，这个自定义组没写 priority，所以优先级默认为 0
@@ -375,7 +428,7 @@ module.exports = {
         polyfill: {
           name: 'polyfill', // 给输出的 bundle 起个名
           test: /[\\/]node_modules[\\/]core-js[\\/]/,
-          priority: -5,
+          priority: 10,
           reuseExistingChunk: true,
         },
         // 覆盖掉默认的 defaultVendors 分组
@@ -402,6 +455,7 @@ module.exports = {
 
     /**
      * 提取 runtime bundle 文件，用于存储输出的 bundle 文件与其 hash 值的对应关系
+     *  - 具体作用可以查看 readme 文件中对 Network Cache 的讲解
      *  - 在此项目中可以修改 js 目录中的 mul.js 文件做测试
      */
     runtimeChunk: {

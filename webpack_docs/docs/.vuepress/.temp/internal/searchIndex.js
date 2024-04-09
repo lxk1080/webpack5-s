@@ -697,37 +697,92 @@ export const searchIndex = [
     "extraFields": []
   },
   {
-    "title": "学习资料",
-    "headers": [],
-    "path": "/intro/asset.html",
+    "title": "React 脚手架",
+    "headers": [
+      {
+        "level": 2,
+        "title": "开发模式配置",
+        "slug": "开发模式配置",
+        "children": []
+      },
+      {
+        "level": 2,
+        "title": "生产模式配置",
+        "slug": "生产模式配置",
+        "children": []
+      },
+      {
+        "level": 2,
+        "title": "其他配置",
+        "slug": "其他配置",
+        "children": []
+      },
+      {
+        "level": 2,
+        "title": "合并开发和生产配置",
+        "slug": "合并开发和生产配置",
+        "children": []
+      },
+      {
+        "level": 2,
+        "title": "优化配置",
+        "slug": "优化配置",
+        "children": []
+      }
+    ],
+    "path": "/project/react-cli.html",
     "pathLocale": "/",
     "extraFields": []
   },
   {
-    "title": "适合群体",
+    "title": "介绍",
     "headers": [],
-    "path": "/intro/group.html",
+    "path": "/project/",
     "pathLocale": "/",
     "extraFields": []
   },
   {
-    "title": "我能学到什么",
+    "title": "总结",
     "headers": [],
-    "path": "/intro/learn.html",
+    "path": "/project/summary.html",
     "pathLocale": "/",
     "extraFields": []
   },
   {
-    "title": "前置知识",
-    "headers": [],
-    "path": "/intro/pre.html",
-    "pathLocale": "/",
-    "extraFields": []
-  },
-  {
-    "title": "依赖环境",
-    "headers": [],
-    "path": "/intro/",
+    "title": "Vue 脚手架",
+    "headers": [
+      {
+        "level": 2,
+        "title": "开发模式配置",
+        "slug": "开发模式配置",
+        "children": []
+      },
+      {
+        "level": 2,
+        "title": "生产模式配置",
+        "slug": "生产模式配置",
+        "children": []
+      },
+      {
+        "level": 2,
+        "title": "其他配置",
+        "slug": "其他配置",
+        "children": []
+      },
+      {
+        "level": 2,
+        "title": "合并开发和生产配置",
+        "slug": "合并开发和生产配置",
+        "children": []
+      },
+      {
+        "level": 2,
+        "title": "优化配置",
+        "slug": "优化配置",
+        "children": []
+      }
+    ],
+    "path": "/project/vue-cli.html",
     "pathLocale": "/",
     "extraFields": []
   },
@@ -965,92 +1020,37 @@ export const searchIndex = [
     "extraFields": []
   },
   {
-    "title": "React 脚手架",
-    "headers": [
-      {
-        "level": 2,
-        "title": "开发模式配置",
-        "slug": "开发模式配置",
-        "children": []
-      },
-      {
-        "level": 2,
-        "title": "生产模式配置",
-        "slug": "生产模式配置",
-        "children": []
-      },
-      {
-        "level": 2,
-        "title": "其他配置",
-        "slug": "其他配置",
-        "children": []
-      },
-      {
-        "level": 2,
-        "title": "合并开发和生产配置",
-        "slug": "合并开发和生产配置",
-        "children": []
-      },
-      {
-        "level": 2,
-        "title": "优化配置",
-        "slug": "优化配置",
-        "children": []
-      }
-    ],
-    "path": "/project/react-cli.html",
-    "pathLocale": "/",
-    "extraFields": []
-  },
-  {
-    "title": "介绍",
+    "title": "学习资料",
     "headers": [],
-    "path": "/project/",
+    "path": "/intro/asset.html",
     "pathLocale": "/",
     "extraFields": []
   },
   {
-    "title": "总结",
+    "title": "适合群体",
     "headers": [],
-    "path": "/project/summary.html",
+    "path": "/intro/group.html",
     "pathLocale": "/",
     "extraFields": []
   },
   {
-    "title": "Vue 脚手架",
-    "headers": [
-      {
-        "level": 2,
-        "title": "开发模式配置",
-        "slug": "开发模式配置",
-        "children": []
-      },
-      {
-        "level": 2,
-        "title": "生产模式配置",
-        "slug": "生产模式配置",
-        "children": []
-      },
-      {
-        "level": 2,
-        "title": "其他配置",
-        "slug": "其他配置",
-        "children": []
-      },
-      {
-        "level": 2,
-        "title": "合并开发和生产配置",
-        "slug": "合并开发和生产配置",
-        "children": []
-      },
-      {
-        "level": 2,
-        "title": "优化配置",
-        "slug": "优化配置",
-        "children": []
-      }
-    ],
-    "path": "/project/vue-cli.html",
+    "title": "我能学到什么",
+    "headers": [],
+    "path": "/intro/learn.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "前置知识",
+    "headers": [],
+    "path": "/intro/pre.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "依赖环境",
+    "headers": [],
+    "path": "/intro/",
     "pathLocale": "/",
     "extraFields": []
   },

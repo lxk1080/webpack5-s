@@ -2,11 +2,19 @@
 
 1. `npm run docs`，打开说明文档
 
-2. `npm run dev`，开发环境运行
+2. `npm run dev`，webpack5 开发环境运行
 
-3. `npm run build`，生产环境打包
+3. `npm run build`，webpack5 生产环境打包
 
-4. 优化打包构建的几个角度
+4. `npm run dev:react`，react-cli 开发环境运行
+
+5. `npm run build:react`，react-cli 生产环境打包
+
+6. `npm run dev:vue`，vue-cli 开发环境运行
+
+7. `npm run build:vue`，vue-cli 生产环境打包
+
+8. 优化打包构建的几个角度
    - 提升开发体验
      - SourceMap（源代码映射）
        - 增强调试体验。生成打包后代码和源代码之间的行列映射
@@ -114,22 +122,24 @@
          - 在入口文件注册 Service Worker
        - 用于生产模式，在断网时供用户使用离线功能
 
-5. 构建流行框架的脚手架（非命令式）
+9. 构建流行框架的脚手架（非命令式）
     - React-Cli
-      - 项目路径：react-cli
+      - 所在目录：react-cli
       - webpack 配置：
         - 公共改动：
           - 引入 cross-env 设置环境变量
-          - 使用 babel-loader 处理 jsx 文件，使用预设：。。。
-          - eslint 配置，使用 extends：。。。
+          - 使用 babel-loader 处理 jsx 文件，使用预设：babel-preset-react-app
+          - eslint 配置，使用 extends：eslint-config-react-app
           - 使用 resolve.extensions 自动补全
+          - 去掉了多进程功能，需要时再加
           - 使用路由懒加载：React.lazy、React.Suspense
         - 开发模式改动：
-          - 激活 js 热更新（HMR），需要插件：。。。
-          - devServer 兜底 index.html 配置：。。。
+          - 激活 js 热更新（HMR），需要插件：@pmmmwh/react-refresh-webpack-plugin
+          - devServer 兜底 index.html 配置：historyApiFallback: true
         - 生产模式改动：
           - 引入 copy-webpack-plugin，复制静态资源
           - 使用 splitChunks 分割代码（antd、react、其它）
-    - Vue
+    - Vue-Cli
+      - 所在目录：vue-cli
 
 

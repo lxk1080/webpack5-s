@@ -4,11 +4,15 @@ const webpack = require('webpack');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 // cpu 核数，逻辑核数
 const threads = os.cpus().length;
 console.log('threads ==>', threads);
 
+/**
+ * 在开发模式中使用 style-loader 将样式直接插入到动态创建的 style 标签中
+ */
 const getStyleLoaders = (preProcessor) => {
   return [
     'style-loader',
@@ -40,10 +44,14 @@ module.exports = {
   },
   output: {
     /**
-     * 根目录，所有文件的输出目录。开发模式没有输出，不需要指定输出目录，下面的配置都可以注释掉
+     * 根目录，所有文件的输出目录。开发模式没有输出，不需要指定输出目录，事实上，下面的所有配置都可以不要
+     *  - 开发模式生成的代码在内存中，虽然本地看不到，但在页面中调试时，通过 Sources 仍能看到打包后的部分资源
      */
     // path: path.resolve(__dirname, 'dist'),
-    // filename: 'js/bundle.js',
+    /**
+     * 因为可以通过 Sources 看到资源，所以配置 filename 等相关属性，还是能看到效果的，但必要性不大，这里还是注释掉了
+     */
+    // filename: 'js/[name].js',
     /**
      * webpack5 清空目标文件夹不再需要引入插件。开发模式使用 devServer，不生成 dist 目录，所以不需要这句
      */
@@ -240,7 +248,21 @@ module.exports = {
       // rel: 'preload',
       // as: 'script',
     }),
+
+    /**
+     * 复制静态资源
+     */
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, './src/public/favicon.ico'),
+          // 虽然开发模式没有输出目录，但这句仍然生效
+          to: path.resolve(__dirname, './dist'),
+        },
+      ],
+    }),
   ],
+
   optimization: {
     /**
      * 代码分割，使用详情可以查看生产配置
