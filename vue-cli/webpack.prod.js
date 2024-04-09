@@ -156,7 +156,7 @@ module.exports = {
           priority: 20,
           chunks: "initial", // 只对入口 chunk 进行处理
         },
-        // 其它的第三方库打包到一起
+        // 其它的第三方库打包到一起（这个项目打包并未生成 vendors 对应的 bundle，看作是正常的哈，没有第三方代码库的使用）
         vendors: {
           name: "vendors",
           test: /[\\/]node_modules[\\/]/,
