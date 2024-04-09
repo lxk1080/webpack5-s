@@ -119,7 +119,7 @@ module.exports = {
         // 如果项目中没有，就删除掉
         antd: {
           name: "antd",
-          test: /[\\/]node_modules[\\/]antd(.*)/,
+          test: /[\\/]node_modules[\\/]antd[\\/]/,
           priority: 30,
         },
         // 将 react 相关的库单独打包，减少 node_modules 的 chunk 体积
@@ -144,7 +144,7 @@ module.exports = {
     },
   },
   resolve: {
-    // 自动补全文件扩展名，让 jsx 可以使用，会从左到右按顺序补全尝试
+    // 自动补全文件扩展名，会从左到右按顺序补全尝试
     extensions: [".jsx", ".js", ".json"],
   },
 };

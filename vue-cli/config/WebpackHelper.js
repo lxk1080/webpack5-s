@@ -9,19 +9,12 @@ class WebpackHelper {
 
   getStyleLoaders(loaderName) {
     let preLoader = loaderName
-    if (loaderName === 'less-loader') {
+    if (loaderName === 'sass-loader') {
       preLoader = {
         loader: loaderName,
         options: {
-          lessOptions: {
-            // 解决 antd 中 Inline JavaScript is not enabled 问题
-            javascriptEnabled: true,
-            // 设置 antd 的自定义主题，这个了解下即可，最新版 antd 可以直接在代码中修改主题颜色
-            // 修改后需要引入 antd 的 .less 样式文件（之前引入的是 .css 文件）
-            modifyVars: {
-              "@primary-color": "#eb2f96", // 全局主色
-            },
-          },
+          // 自定义主题：自动引入我们定义的 scss 文件
+          additionalData: `@use "@/styles/element/index.scss" as *;`,
         },
       }
     }

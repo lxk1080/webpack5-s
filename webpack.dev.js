@@ -73,6 +73,14 @@ module.exports = {
     // 建议使用其他 loader 来解决，比如：vue-loader, react-hot-loader
     hot: true,
   },
+  resolve: {
+    // 自动补全文件扩展名，会从左到右按顺序补全尝试
+    extensions: [".jsx", ".js", ".json"],
+    // 配置路径别名
+    alias: {
+      "@": path.resolve(__dirname, 'src'),
+    },
+  },
   module: {
     rules: [
       {

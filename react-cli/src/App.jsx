@@ -26,6 +26,7 @@ function App() {
         </li>
       </ul>
       <Suspense fallback={<div>loading...</div>}>
+        {/* 这个 Routes 就是之前的 Switch 组件 */}
         <Routes>
           <Route path="/" element={<Welcome/>} />
           <Route path="/home" element={<Home/>} />

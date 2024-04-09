@@ -125,10 +125,10 @@
 9. 构建流行框架的脚手架（非命令式）
     - React-Cli
       - 所在目录：react-cli
-      - webpack 配置：
+      - webpack 配置基本沿用之前的常规配置，相对来说，有以下改动：
         - 公共改动：
           - 引入 cross-env 设置环境变量
-          - 使用 babel-loader 处理 jsx 文件，使用预设：babel-preset-react-app
+          - 使用 babel-loader 处理 jsx? 文件，使用预设：babel-preset-react-app
           - eslint 配置，使用 extends：eslint-config-react-app
           - 使用 resolve.extensions 自动补全
           - 去掉了多进程功能，需要时再加
@@ -141,5 +141,21 @@
           - 使用 splitChunks 分割代码（antd、react、其它）
     - Vue-Cli
       - 所在目录：vue-cli
+      - webpack 配置和 react-cli 的差不多，相对来说，有以下改动：
+        - 公共改动：
+          - 自动补全把 .jsx 换成 .vue，并去掉处理 .jsx 结尾文件的配置
+          - 增加 vue-loader 和 VueLoaderPlugin 插件
+          - 将 style-loader 替换为 vue-style-loader
+          - babel-loader 使用预设：@vue/cli-plugin-babel/preset（这个是安装 @vue/cli-plugin-babel 包）
+          - eslint 使用 vue 官方配置："plugin:vue/vue3-essential" 和 "eslint:recommended"
+          - 删除 loader 匹配的 oneOf 功能，因为 vue-loader 不支持
+          - 使用 DefinePlugin 增加几个环境变量，解决 vue 页面提示警告的问题
+          - Element Plus 按需加载配置：unplugin-auto-import、unplugin-vue-components
+          - 配置了路径别名：resolve.alias
+        - 开发模式改动：
+          - 删除 react 的 js 热更新（HMR）功能，vue-loader 自带 HMR 功能
+        - 生产模式改动：
+          - 使用 splitChunks 分割代码（element-plus、vue、其它）
+      - 关于 vue-loader 的使用，参考官方文档：https://vue-loader.vuejs.org/
 
 

@@ -5,11 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "cd ./webpack_docs && npm start",
     "dev": "npx webpack serve --config ./webpack.dev.js",
     "build": "npx webpack --config ./webpack.prod.js",
-    "docs": "cd ./webpack_docs && npm start",
     "dev:react": "cd ./react-cli && npm run dev",
-    "build:react": "cd ./react-cli && npm run build"
+    "build:react": "cd ./react-cli && npm run build",
+    "dev:vue": "cd ./vue-cli && npm run dev",
+    "build:vue": "cd ./vue-cli && npm run build"
   },
   "keywords": [],
   "author": "",

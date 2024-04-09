@@ -1,0 +1,8 @@
+// 这个语法是从官方文档复制过来的
+@forward "element-plus/theme-chalk/src/common/var.scss" with (
+  $colors: (
+    "primary": (
+      "base": forestgreen,
+    ),
+  )
+);
