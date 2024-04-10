@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "author": {
+      "type": "string"
+    }
+  },
+  "//": "不允许传递其它未声明的属性",
+  "additionalProperties": false
+}

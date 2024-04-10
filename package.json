@@ -11,7 +11,9 @@
     "dev:react": "cd ./react-cli && npm run dev",
     "build:react": "cd ./react-cli && npm run build",
     "dev:vue": "cd ./vue-cli && npm run dev",
-    "build:vue": "cd ./vue-cli && npm run build"
+    "build:vue": "cd ./vue-cli && npm run build",
+    "dev:origin": "cd ./origins && npm run dev",
+    "build:origin": "cd ./origins && npm run build"
   },
   "keywords": [],
   "author": "",

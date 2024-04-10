@@ -158,4 +158,112 @@
           - 使用 splitChunks 分割代码（element-plus、vue、其它）
       - 关于 vue-loader 的使用，参考官方文档：https://vue-loader.vuejs.org/
 
-
+10. webpack 原理
+    - loader 原理
+      - what：帮助 webpack 将不同类型的文件转换为可识别的模块
+      - loader 按执行顺序分类：
+        - pre：前置 loader
+        - normal：普通 loader
+        - inline：内联 loader
+        - post：后置 loader
+      - 执行顺序：
+        - 4 类 loader 的执行优先级为：pre > normal > inline > post
+        - 相同优先级的 loader 执行顺序为：从右到左，从下到上
+          ```js
+          // 此时 loader 执行顺序：loader3 - loader2 - loader1
+          module: {
+            rules: [
+              {
+                test: /\.js$/,
+                loader: "loader1",
+              },
+              {
+                test: /\.js$/,
+                loader: "loader2",
+              },
+              {
+                test: /\.js$/,
+                loader: "loader3",
+              },
+            ],
+          },
+          // 像这种可以匹配到多个 loader 的写法，一般不太常用，我们还是尽量使用 use 数组
+          // 对于不同文件后缀的匹配不用考虑先后问题，因为只会匹配到一个 loader
+          ```
+          ```js
+          // 此时 loader 执行顺序：loader1 - loader2 - loader3
+          module: {
+            rules: [
+              {
+                enforce: "pre",
+                test: /\.js$/,
+                loader: "loader1",
+              },
+              {
+                // 没有 enforce 就是 normal
+                test: /\.js$/,
+                loader: "loader2",
+              },
+              {
+                enforce: "post",
+                test: /\.js$/,
+                loader: "loader3",
+              },
+            ],
+          },
+          ```
+      - 使用 loader 的方式
+        - 配置方式：在 webpack.config.js 文件中指定 loader（pre、normal、post）
+        - 内联方式：在每个 import 语句中显式指定 loader（inline）
+      - 关于 inline loader
+        - 用法：`import Styles from 'style-loader!css-loader?modules!./styles.css';`
+          - 使用 `css-loader` 和 `style-loader` 处理 `styles.css` 文件
+          - 通过 `!` 将资源中的 loader 分开（文件与 loader 也要用 `!` 隔开）
+          - `?` 后面是 loader 的参数
+        - inline loader 可以通过添加不同前缀，跳过其他类型 loader
+          - `!` 跳过 normal loader
+            - `import Styles from '!style-loader!css-loader?modules!./styles.css';`
+          - `-!` 跳过 pre 和 normal loader
+            - `import Styles from '-!style-loader!css-loader?modules!./styles.css';`
+          - `!!` 跳过 pre、normal 和 post loader
+            - `import Styles from '!!style-loader!css-loader?modules!./styles.css';`
+      - loader 的本质
+        - 是一个函数，当 webpack 解析资源时，会调用相应的 loader 去处理
+        - 接收文件内容作为参数，再把处理后的内容返回出去
+        - 接收的参数：
+          - content：文件内容
+          - map：SourceMap 相关
+          - meta：别的 loader 传递过来的数据
+      - loader 分类
+        - 同步 loader：[sync-loader](./origins/loaders/sync-loader/index.js)
+        - 异步 loader：[async-loader](./origins/loaders/async-loader/index.js)
+        - Raw Loader：[raw-loader](./origins/loaders/raw-loader/index.js)
+        - Pitching Loader：[pitching-loader](./origins/loaders/pitching-loader/p1.js)
+          - webpack 会先从左到右执行 loader 链中的每个 loader 上的 pitch 方法（如果有），然后再从右到左执行 loader 链中的每个 loader 上的普通 loader 方法
+            <br/><img src="./picture/01.png" width="60%" height="auto" style="background: white">
+          - 在这个过程中如果任何 pitch 有返回值，则 loader 链被阻断。webpack 会跳过后面所有的的 pitch 和 loader，直接进入上一个 loader
+            <br/><img src="./picture/02.png" width="60%" height="auto" style="background: white">
+      - loader 常用 API（更多 API 可以查阅官方文档：https://webpack.docschina.org/api/loaders/#the-loader-context）
+        - `const callback = this.async()`：异步回调 loader，返回 this.callback
+        - `this.callback(err, content, sourceMap?, meta?)`：可以同步或者异步调用的并返回多个结果的函数
+        - `this.getOptions(schema)`：获取 loader 的 options
+        - `this.emitFile(name, content, sourceMap)`：产生一个文件
+        - `this.utils.contextify(context, request)`：返回一个相对路径
+        - `this.utils.absolutify(context, request)`：返回一个绝对路径
+      - 自定义 loader
+        - clean-log-loader
+          - 作用：清理 js 代码中的 console.log
+          - 代码：[clean-log-loader](./origins/loaders/clean-log-loader/index.js)
+        - comment-loader
+          - 作用：给文件添加顶部文本注释
+          - 代码：[comment-loader](./origins/loaders/comment-loader/index.js)
+        - babel-loader
+          - 作用：编译 js 代码，将 ES6+ 语法编译成 ES5- 语法
+          - 代码：[babel-loader](./origins/loaders/babel-loader/index.js)
+        - file-loader
+          - 作用：将文件原封不动输出出去（图片）
+          - 代码：[file-loader](./origins/loaders/file-loader/index.js)
+        - style-loader
+          - 作用：动态创建 style 标签，插入 js 中的样式代码，使样式生效
+          - 代码：[style-loader](./origins/loaders/style-loader/index.js)
+    - plugin 原理

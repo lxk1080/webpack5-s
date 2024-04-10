@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "presets": {
+      "type": "array"
+    }
+  },
+  "//": "允许传递其它未声明的属性，例如：plugins",
+  "additionalProperties": true
+}
