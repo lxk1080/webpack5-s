@@ -386,9 +386,10 @@ module.exports = {
      * 代码分割
      */
     splitChunks: {
-      // initial 入口 chunk，对于异步导入的文件不处理
-      // async 异步 chunk，只对异步导入的文件处理
-      // all 全部 chunk 都处理
+      // initial：初始 chunk（各种不同文件类型的入口 chunk，例如 main.js、main.css），对于异步导入的文件不处理
+      //  - 其实通过 splitChunks 拆分出来的 chunk 也叫初始 chunk，只不过代码执行到这的时候还没有哈
+      // async：异步 chunk（也就是非初始 chunk、按需加载的 chunk），只对异步导入的文件处理
+      // all：全部 chunk 都处理（初始 chunk 和异步 chunk）
       // 一般情况下使用 all，并且对于 SPA 项目来说，如果没有什么特别的配置，就写一个 chunks: 'all' 即可，其它全部使用默认
       chunks: 'all',
 
@@ -396,7 +397,7 @@ module.exports = {
        * 以下是默认值
        */
       // chunks: 'async', // 只对异步 chunk 进行处理
-      // minSize: 20000, // 生成 chunk 的最小体积（以 bytes 为单位）
+      // minSize: 20000, // 生成 chunk 的最小体积（以 bytes 为单位，注意：小于这个大小的 module 不会进行抽离）
       // minRemainingSize: 0, // 确保最后提取的文件大小不能为 0，通过确保拆分后剩余的最小 chunk 体积超过限制来避免大小为零的模块
       // minChunks: 1, // 至少被引用的次数，满足条件才会被代码分割（这个引用的次数指的是：被不同的入口文件引用的次数，所以单入口项目中文件被引入的次数永远为 1）
       // maxAsyncRequests: 30, // 按需加载时最大并行请求数量
@@ -439,12 +440,20 @@ module.exports = {
           priority: 10,
           reuseExistingChunk: true,
         },
-        // 覆盖掉默认的 defaultVendors 分组
+        // 覆盖掉默认的 defaultVendors 分组，提取出其它的第三方代码
+        // 关于下面的 minSize 配置：
+        //  - 这个 minSize 指的是最后生成的 bundle 最小体积不能小于这个值
+        //    - 那你可能就想了：我可以提取很多个小 module 放在一起，只要最终体积不小这个值就好了
+        //    - 但是实际情况是：单个小 module 的体积如果小于这个值，就不会被提取
+        //    - 所以 minSize 的含义也可以理解为：小于这个大小的 module 不会进行抽离！这点很重要！
+        //  - 下面配置的 2048 含义
+        //    - 有的第三方模块虽然很小，但是我们仍然将其提取出来，但是太小的，小于 2KB 的就不提取了
         defaultVendors: {
           name: 'vendors', // 给输出的 bundle 起个名
           test: /[\\/]node_modules[\\/]/,
           priority: -10,
           reuseExistingChunk: true,
+          minSize: 2048,
         },
         // 抽取出一个公共文件（注意：并不是公共代码，单页面 SPA 项目中只有一个入口，所以不存在公共代码）
         // 注意：其实这个配置在 SPA 中是没必要的，因为 webpack 会根据默认配置或 import() 语法默认做分包

@@ -156,12 +156,15 @@ module.exports = {
           priority: 20,
           chunks: "initial", // 只对入口 chunk 进行处理
         },
-        // 其它的第三方库打包到一起（这个项目打包并未生成 vendors 对应的 bundle，看作是正常的哈，没有第三方代码库的使用）
+        // 其它的第三方库打包到一起
+        // 这个项目打包并未生成 vendors 对应的 bundle，是因为引入的第三方 module 单个体积都是小于默认的 minSize 的（20KB），所以未进行抽离
+        //  - 要是想进行抽离，将 minSize 的值设置更小即可（这里是不建议设置更小的，因为分成了多个小文件，会增加请求次数）
         vendors: {
           name: "vendors",
           test: /[\\/]node_modules[\\/]/,
           priority: 10,
           chunks: "initial",
+          // minSize: 1024,
         },
       },
     },
