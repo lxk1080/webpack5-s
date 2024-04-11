@@ -1,10 +1,12 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const TestPlugin = require('./plugins/test-plugin')
 
 // 终端路径
 console.log('path.resolve ==>', path.resolve())
 
 module.exports = {
+  // 开发模式，调试使用，就使用这个模式哈，不会压缩代码
   mode: 'development',
   entry: {
     main: path.resolve(__dirname, './src/main.js'),
@@ -65,7 +67,9 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/public/index.html'),
-    })
+    }),
+    // 自定义插件测试
+    new TestPlugin(),
   ],
   devServer: {
     host: '127.0.0.1',

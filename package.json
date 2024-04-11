@@ -13,7 +13,8 @@
     "dev:vue": "cd ./vue-cli && npm run dev",
     "build:vue": "cd ./vue-cli && npm run build",
     "dev:origin": "cd ./origins && npm run dev",
-    "build:origin": "cd ./origins && npm run build"
+    "build:origin": "cd ./origins && npm run build",
+    "debug": "cd ./origins && npm run debug"
   },
   "keywords": [],
   "author": "",
