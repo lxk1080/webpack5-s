@@ -1,13 +1,17 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const TestPlugin = require('./plugins/test-plugin')
+const TestWebpackPlugin = require('./plugins/test-webpack-plugin')
+const BannerWebpackPlugin = require('./plugins/banner-webpack-plugin')
 
 // 终端路径
 console.log('path.resolve ==>', path.resolve())
+// 通过这个可以找到执行 webpack 时，实际执行的 nodejs 文件
+console.log('process.argv ==>', process.argv)
 
 module.exports = {
-  // 开发模式，调试使用，就使用这个模式哈，不会压缩代码
-  mode: 'development',
+  // 开发模式，调试使用，使用这个模式，不会压缩代码
+  // mode: 'development',
+  mode: 'production',
   entry: {
     main: path.resolve(__dirname, './src/main.js'),
   },
@@ -36,9 +40,9 @@ module.exports = {
         // clean-log-loader
         // use: ['./loaders/clean-log-loader'],
 
-        // comment-loader
+        // banner-loader
         // use: {
-        //   loader: './loaders/comment-loader',
+        //   loader: './loaders/banner-loader',
         //   options: {
         //     author: 'zerol',
         //   },
@@ -60,7 +64,7 @@ module.exports = {
       {
         test: /\.css$/,
         // use: ['style-loader', 'css-loader'], // 官方 loader
-        use: ["./loaders/style-loader", "css-loader"], // 自定义的 style-loader
+        use: ['./loaders/style-loader', 'css-loader'], // 自定义的 style-loader
       },
     ],
   },
@@ -68,8 +72,15 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/public/index.html'),
     }),
+
     // 自定义插件测试
-    new TestPlugin(),
+    // new TestWebpackPlugin(),
+
+    // 自定义的 banner-webpack-plugin
+    new BannerWebpackPlugin({
+      author: 'zerol',
+      version: '1.0.0',
+    }),
   ],
   devServer: {
     host: '127.0.0.1',

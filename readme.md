@@ -262,9 +262,9 @@
         - clean-log-loader
           - 作用：清理 js 代码中的 console.log
           - 代码：[clean-log-loader](./origins/loaders/clean-log-loader/index.js)
-        - comment-loader
+        - banner-loader
           - 作用：给文件添加顶部文本注释
-          - 代码：[comment-loader](./origins/loaders/comment-loader/index.js)
+          - 代码：[banner-loader](./origins/loaders/banner-loader/index.js)
         - babel-loader
           - 作用：编译 js 代码，将 ES6+ 语法编译成 ES5- 语法
           - 代码：[babel-loader](./origins/loaders/babel-loader/index.js)
@@ -301,7 +301,7 @@
               exports.MultiHook = require("./MultiHook");
             ```
           - Tapable 还统一暴露了三个方法给插件，用于注入不同类型的自定义构建行为：
-            - tap：可以注册同步钩子和异步串行钩子
+            - tap：可以注册同步钩子和异步钩子
             - tapAsync：以回调方式注册异步钩子
             - tapPromise：以 Promise 方式注册异步钩子
         - plugin 构建对象
@@ -327,4 +327,8 @@
         - 生命周期示意图
           <br/><img src="./picture/03.jpg" width="40%" height="auto">
         - 开发插件并调试
-          - 代码：[test-plugin](./origins/plugins/test-plugin/index.js)
+          - 代码：[test-webpack-plugin](./origins/plugins/test-webpack-plugin/index.js)（内有开发自定义插件时的一些说明）
+        - 自定义 plugin
+          - banner-plugin
+            - 作用：给打包输出的文件添加注释
+            - 代码：[banner-webpack-plugin](./origins/plugins/banner-webpack-plugin/index.js)

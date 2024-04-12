@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx webpack serve",
     "build": "npx webpack",
-    "//": "下面这句就相当于执行 webpack，我们加上断点调试",
+    "//1": "下面这句就相当于执行 webpack，我们加上断点调试",
+    "//2": "这个文件路径可以通过 process.argv 找到",
     "debug": "node --inspect-brk ./node_modules/webpack-cli/bin/cli.js"
   },
   "keywords": [],

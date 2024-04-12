@@ -1,15 +1,24 @@
 /**
  * @desc 自定义一个插件
- *  - webpack 执行流程大致如下：
+ *  - 1、webpack 执行流程大致如下：
  *    - 1、webpack 加载 webpack.config.js 中所有配置，此时就会 new TestPlugin()，插件的 constructor 被执行
  *    - 2、webpack 创建 compiler 对象（后面 plugin 中的 apply 方法要用到）
  *    - 3、遍历 plugins 中所有的插件，调用插件的 apply 方法
  *    - 4、执行剩下编译流程（触发各个 hooks 事件，并执行挂载在上面的任务）
- *  - 在不同的 hooks 上挂载任务时，不需要关注定义顺序（写代码的顺序），hooks 事件会在相应的时机被触发
- *  - 在相同的 hooks 上挂载任务时：
+ *  - 2、在不同的 hooks 上挂载任务时，不需要关注定义顺序（写代码的顺序）
+ *    - 因为 hooks 会在相应的时机自动被触发
+ *  - 3、下一个 hooks 会在上一个 hooks 执行完毕后才会被触发
+ *    - 如果上一个 hooks 内定义了很多异步任务，那下一个 hooks 会等待这些异步任务全部响应后才会被触发
+ *  - 4、在相同的 hooks 上挂载任务时：
  *    - 同步钩子：任务按定义顺序执行
  *    - 异步串行钩子：任务按定义顺序执行，下一个任务会等待上一个任务响应后执行
  *    - 异步并行钩子：任务 “同时” 执行（并行），谁先做完就先响应谁
+ *  - 5、关于注册钩子的方式：
+ *    - 同步钩子：只能使用 tap 注册
+ *      - 在同步钩子上注册的任务，不能包含任何异步操作
+ *    - 异步钩子：可以使用 tap 注册，也可以使用 tapAsync 和 tapPromise 注册
+ *      - 在异步钩子上使用 tap 注册的任务，钩子被触发时，任务会同步执行
+ *      - 想要在任务内做异步操作，只能使用 tapAsync 和 tapPromise
  */
 class TestPlugin {
   constructor() {
@@ -73,6 +82,10 @@ class TestPlugin {
      */
 
     // 由文档可知，make 是异步并行钩子：AsyncParallelHook
+    compiler.hooks.make.tap(this.name, (compilation) => {
+      console.log('TestPlugin make 000')
+    })
+
     compiler.hooks.make.tapAsync(this.name, (compilation, callback) => {
       // 由生命周期可知，compilation.hooks 需要在 compilation 阶段触发前注册才能使用
       // 最晚能生效的钩子就是 compiler.hooks.make
@@ -93,11 +106,13 @@ class TestPlugin {
       }, 1000)
     })
 
-    compiler.hooks.make.tapAsync(this.name, (compilation, callback) => {
-      setTimeout(() => {
-        console.log('TestPlugin make 222')
-        callback()
-      }, 2000)
+    compiler.hooks.make.tapPromise(this.name, (compilation) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log('TestPlugin make 222')
+          resolve()
+        }, 2000)
+      })
     })
   }
 }
