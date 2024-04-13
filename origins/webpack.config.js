@@ -4,6 +4,7 @@ const TestWebpackPlugin = require('./plugins/test-webpack-plugin')
 const BannerWebpackPlugin = require('./plugins/banner-webpack-plugin')
 const CleanWebpackPlugin = require('./plugins/clean-webpack-plugin')
 const AnalyzeWebpackPlugin = require('./plugins/analyze-webpack-plugin')
+const InlineChunkWebpackPlugin = require('./plugins/inline-chunk-webpack-plugin')
 
 // 终端路径
 console.log('path.resolve ==>', path.resolve())
@@ -19,6 +20,10 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, './dist'),
+    // 解决 inline-chunk-webpack-plugin 在 inline 化文件后，通过 devServer 在浏览器运行时的报错：
+    //  - Automatic publicPath is not supported in this browser
+    // 这个报错只有在通过 devServer 启动时才有哈，通过提示可知，加上 publicPath: '' 即可解决错误
+    publicPath: '',
     filename: 'js/[name].[contenthash:8].js',
     // clean: true,
   },
@@ -82,7 +87,7 @@ module.exports = {
     new BannerWebpackPlugin({
       author: 'zerol',
       version: '1.0.0',
-      date: new Date().toDateString(),
+      date: new Date().toString(),
     }),
 
     // 自定义的 clean-webpack-plugin，可以解决 banner-webpack-plugin 中存在的问题
@@ -90,7 +95,20 @@ module.exports = {
 
     // 自定义的 analyze-webpack-plugin，输出资源大小分析
     new AnalyzeWebpackPlugin(),
+
+    // 自定义的 inline-chunk-webpack-plugin，可以将 src 引用文件的方式改成 inline script 的方式
+    new InlineChunkWebpackPlugin([
+      /runtime-hash-(.*)\.js/,
+    ]),
   ],
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+    runtimeChunk: {
+      name: entryPoint => `runtime-hash-${entryPoint.name}`,
+    },
+  },
   devServer: {
     host: '127.0.0.1',
     port: 3000,

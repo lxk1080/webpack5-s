@@ -341,5 +341,7 @@
             - 代码：[analyze-webpack-plugin](./origins/plugins/analyze-webpack-plugin/index.js)
           - inline-chunk-webpack-plugin
             - 作用：webpack 打包生成的某些文件太小了（例如：runtime-hash），额外发送请求性能不好，所以需要将其内联到 js 中，从而减少请求数量
-            - 代码：
-            - 操作 html-webpack-plugin，可以查看：[官方文档](https://github.com/jantimon/html-webpack-plugin/?tab=readme-ov-file#afteremit-hook) ，往上翻有一个执行流程图，我们主要是根据这个图，选择对应的 hooks 在自定义的插件中操作 html-webpack-plugin
+            - 代码：[inline-chunk-webpack-plugin](./origins/plugins/inline-chunk-webpack-plugin/index.js)
+            - 操作 html-webpack-plugin，可以查看：[官方文档](https://github.com/jantimon/html-webpack-plugin/?tab=readme-ov-file#afteremit-hook) ，往上翻有一个执行流程图，我们主要是根据这个图，选择对应的 hooks 在自定义的插件中操作 html-webpack-plugin，这些 hooks 是 html-webpack-plugin 插件提供的
+
+。。以上 。。
