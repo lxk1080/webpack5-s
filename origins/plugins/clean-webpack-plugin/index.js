@@ -25,6 +25,7 @@ class CleanWebpackPlugin {
     compiler.hooks.emit.tap('CleanWebpackPlugin', (compilation) => {
       // 3、通过 fs 删除打包输出目录下的所有文件
       this.removeFiles(fs, outputPath)
+      // fs.rmdirSync(outputPath, { recursive: true })
       // debugger
     })
   }

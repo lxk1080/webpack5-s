@@ -15,7 +15,7 @@ class InlineChunkWebpackPlugin {
 
   apply(compiler) {
     compiler.hooks.compilation.tap('InlineChunkWebpackPlugin', (compilation) => {
-      // 1、获取 html-webpack-plugin 的 hooks
+      // 1、获取 html-webpack-plugin 的 hooks（注意：getHooks 这个方法在不同版本的 html-webpack-plugin 插件中名称可能不一样）
       const hooks = HtmlWebpackPlugin.getHooks(compilation)
 
       // 2、注册 html-webpack-plugin 的 hooks -> alterAssetTagGroups（这个钩子对应的阶段是 head 标签和 body 标签刚分好组）
