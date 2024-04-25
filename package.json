@@ -14,7 +14,8 @@
     "build:vue": "cd ./vue-cli && npm run build",
     "dev:origin": "cd ./origins && npm run dev",
     "build:origin": "cd ./origins && npm run build",
-    "debug": "cd ./origins && npm run debug"
+    "debug": "cd ./origins && npm run debug",
+    "compiler": "npx webpack --entry ./compiler/index.js -o ./compiler/bundle --mode=development --no-devtool"
   },
   "keywords": [],
   "author": "",

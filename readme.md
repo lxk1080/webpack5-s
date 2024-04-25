@@ -22,7 +22,10 @@
 
 10. `npm run debug`，loader + plugin 原理，可以在 chrome 浏览器上调试 webpack 的执行流程
 
-11. 优化打包构建的几个角度
+11. `npm run compiler`，编译结果分析 + 模块化原理
+
+
+12. 优化打包构建的几个角度
     - 提升开发体验
       - SourceMap（源代码映射）
         - 增强调试体验。生成打包后代码和源代码之间的行列映射
@@ -130,7 +133,8 @@
           - 在入口文件注册 Service Worker
         - 用于生产模式，在断网时供用户使用离线功能
 
-12. 构建流行框架的脚手架（非命令式）
+
+13. 构建流行框架的脚手架（非命令式）
      - React-Cli
        - 所在目录：react-cli
        - webpack 配置基本沿用之前的常规配置，相对来说，有以下改动：
@@ -166,7 +170,8 @@
            - 使用 splitChunks 分割代码（element-plus、vue、其它）
        - 关于 vue-loader 的使用，参考官方文档：https://vue-loader.vuejs.org/
 
-13. webpack 原理
+
+14. webpack 原理
     - loader 原理
       - what：帮助 webpack 将不同类型的文件转换为可识别的模块
       - loader 按执行顺序分类：
@@ -344,4 +349,13 @@
             - 代码：[inline-chunk-webpack-plugin](./origins/plugins/inline-chunk-webpack-plugin/index.js)
             - 操作 html-webpack-plugin，可以查看：[官方文档](https://github.com/jantimon/html-webpack-plugin/?tab=readme-ov-file#afteremit-hook) ，往上翻有一个执行流程图，我们主要是根据这个图，选择对应的 hooks 在自定义的插件中操作 html-webpack-plugin，这些 hooks 是 html-webpack-plugin 插件提供的
 
-。。以上，持续更新中 。。
+
+15. webpack 编译结果分析
+    - 首先使用命令行：`npm run compiler`，然后到 `./compiler/bundle` 文件夹下查看结果
+    - 可以到 `./compiler/_main.explain.js` 文件内查看编译结果分析
+      - webpack 自己实现了一套导入导出体系，它把你写的代码全部进行编译转换，然后修改成它自己的那一套导入导出模式
+        - 所以，即使你在前端写 commonjs 的代码，webpack 也能识别并转换，它有自己的一套模块化规范
+
+
+
+<br/>持续更新中。。
