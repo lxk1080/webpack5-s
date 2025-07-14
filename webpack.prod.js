@@ -17,6 +17,11 @@ console.log('threads ==>', threads);
 /**
  * @desc 处理样式公共方法
  * 1、使用 MiniCssExtractPlugin.loader 替换 style-loader，以通过 link 标签加载 css 样式
+ *    - 为什么替换？因为替换后，理论上 css 样式响应更快，利于首屏优化，也利于 css 代码块的控制管理
+ *      - style-loader 要想生效，需要页面先加载 js 文件，然后等待时机执行，由 js 操作创建并插入 style 标签
+ *        - 解析 html => 加载 js => dom 渲染 => 执行 js =>  插入 style => 解析 css
+ *      - 而 MiniCssExtractPlugin 直接通过 link 加载 css 样式，不需要依赖 js 文件的执行
+ *        - 解析 html => 加载 css => 解析 css => 加载 js => dom 渲染 => 执行 js
  * 2、引入 postcss-loader 来解决样式兼容性问题，写在 css-loader 之后，预处理器 loader 之前
  * 3、在 package.json 文件中添加 browserslist 来控制样式的兼容性做到什么程度
  *    - "browserslist": ["last 2 version", "> 1%", "not dead"]
