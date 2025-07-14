@@ -25,7 +25,12 @@
 11. `npm run compiler`，编译结果分析 + 模块化原理
 
 
-12. 优化打包构建的几个角度
+12. 基础与初步理解
+    - webpack 本身功能比较少，只能处理 js 文件（还有 json 也可以），处理其它文件需要对应的 loader
+    - webpack 本身的一个重要功能就是，处理模块化问题，ES Module 和 Commonjs 都可以处理
+
+
+13. 优化打包构建的几个角度
     - 提升开发体验
       - SourceMap（源代码映射）
         - 增强调试体验。生成打包后代码和源代码之间的行列映射
@@ -134,7 +139,7 @@
         - 用于生产模式，在断网时供用户使用离线功能
 
 
-13. 构建流行框架的脚手架（非命令式）
+14. 构建流行框架的脚手架（非命令式）
      - React-Cli
        - 所在目录：react-cli
        - webpack 配置基本沿用之前的常规配置，相对来说，有以下改动：
@@ -171,7 +176,7 @@
        - 关于 vue-loader 的使用，参考官方文档：https://vue-loader.vuejs.org/
 
 
-14. webpack 原理
+15. webpack 原理
     - loader 原理
       - what：帮助 webpack 将不同类型的文件转换为可识别的模块
       - loader 按执行顺序分类：
@@ -350,7 +355,7 @@
             - 操作 html-webpack-plugin，可以查看：[官方文档](https://github.com/jantimon/html-webpack-plugin/?tab=readme-ov-file#afteremit-hook) ，往上翻有一个执行流程图，我们主要是根据这个图，选择对应的 hooks 在自定义的插件中操作 html-webpack-plugin，这些 hooks 是 html-webpack-plugin 插件提供的
 
 
-15. webpack 编译结果分析
+16. webpack 编译结果分析
     - 首先使用命令行：`npm run compiler`，然后到 `./compiler/bundle` 文件夹下查看结果
     - 可以到 `./compiler/_main.explain.js` 文件内查看编译结果分析（里面的注释写的很详细哈）
       - webpack 自己实现了一套导入导出体系，它把你写的代码全部进行编译转换，然后修改成它自己的那一套导入导出模式
