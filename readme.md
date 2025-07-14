@@ -100,7 +100,7 @@
           - 使用后的效果是：可以让 webpack 输出 Resource Hint
             - 例如：动态加载文件 `import('./path/to/LoginModal.js')`，代码在构建时会生成 `<link rel="prefetch" href="login-modal-chunk.js">` 并追加到页面头部，指示浏览器在闲置时间预获取 login-modal-chunk.js 文件
           - 本示例用的是 @vue/preload-webpack-plugin 插件，其实 webpack5 已经内置了此功能（但似乎不能全局配置）
-            - 注意：使用本插件会在打包的时候直接插入 link 标签到 html 模板中，但是内置方法不会直接插，而是在代码运行的时候通过 js 控制插入
+            - 注意：使用本插件会在打包的时候直接插入 link 标签到 html 模板中，但是 webpack 内置方法不会直接插，而是在代码运行的时候通过 js 控制插入
             - 可参考官方文档：https://webpack.docschina.org/guides/code-splitting/#prefetchingpreloading-modules
         - 开发模式和生产模式都可以用，主要是生产模式，可以提高页面响应速度
       - Network Cache
