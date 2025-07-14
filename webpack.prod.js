@@ -409,20 +409,20 @@ module.exports = {
        * 以下是默认值
        */
       // chunks: 'async', // 只对异步 chunk 进行处理
-      // minSize: 20000, // 生成 chunk 的最小体积（以 bytes 为单位，注意：小于这个大小的 module 不会进行抽离）
+      // minSize: 20000, // 生成的 chunk 最小体积不能小于此值（以 bytes 为单位，注意：小于这个大小的 module 不会进行抽离）
       // minRemainingSize: 0, // 确保最后提取的文件大小不能为 0，通过确保拆分后剩余的最小 chunk 体积超过限制来避免大小为零的模块
       // minChunks: 1, // 至少被引用的次数，满足条件才会被代码分割（这个引用的次数指的是：被不同的入口文件引用的次数，所以单入口项目中文件被引入的次数永远为 1）
-      // maxAsyncRequests: 30, // 按需加载时最大并行请求数量
+      // maxAsyncRequests: 30, // 按需加载时最大并行请求数量（请求是指引入文件）
       // maxInitialRequests: 30, // 入口 js 文件最大并行请求数量
       // enforceSizeThreshold: 50000, // 超过 50kb 一定会单独打包（此时会忽略 minRemainingSize、maxAsyncRequests、maxInitialRequests）
-      // // 缓存组可以继承和/或覆盖来自 splitChunks.* 的任何选项，但是 test、priority 和 reuseExistingChunk 只能在缓存组级别上进行配置
+      // // 缓存组可以继承/或覆盖来自 splitChunks.* 的任何选项，但是 test、priority 和 reuseExistingChunk 只能在缓存组级别上进行配置
       // // 缓存组，配置哪些模块要打包到一个组
       // cacheGroups: {
       //   // 抽取第三方代码
       //   defaultVendors: { // 组名，这个名称并没有什么实际的用处，只是用来区分不同的组
       //     test: /[\\/]node_modules[\\/]/, // 正则匹配，控制此缓存组选择的模块，省略它会选择所有模块。这个也可以写成一个函数，提供更多的选择
       //     priority: -10, // 权重（值越大优先级越高），自定义组的优先级默认值为 0
-      //     reuseExistingChunk: true, // 如果当前 chunk 包含已从主 bundle 中拆分出的模块，则该模块将被重用，而不是生成新的模块
+      //     reuseExistingChunk: true, // 如果当前 chunk 包含已经从主 bundle 中拆分出的 chunk-x，则该 chunk-x 将被重用，而不是生成新的模块
       //   },
       //   // 抽取公共代码（只有在多入口时才有用）
       //   default: {
@@ -455,10 +455,13 @@ module.exports = {
         // 覆盖掉默认的 defaultVendors 分组，提取出其它的第三方代码
         // 关于下面的 minSize 配置：
         //  - 这个 minSize 指的是最后生成的 bundle 最小体积不能小于这个值
-        //    - 那你可能就想了：我可以提取很多个小 module 放在一起，只要最终体积不小这个值就好了
+        //    - 那你可能就想了：应该会提取很多个小 module 放在一起，只要最终体积不小这个值就好了
         //    - 但是实际情况是：单个小 module 的体积如果小于这个值，就不会被提取
+        //      - 这里说的提取是指从默认的 bundle 文件中抽离出来，当然，这个操作是在内存里进行的，
+        //        操作时还没输出 bundle，只不过从输出的结果来看，就像是从默认的 bundle 中抽出来一样
         //    - 所以 minSize 的含义也可以理解为：小于这个大小的 module 不会进行抽离！这点很重要！
-        //  - 下面配置的 2048 含义
+        //      - 这里猜测，可能 webpack 就是通过只提取大于这个 minSize 的 module 来保证最终生成的 bundle 大小不小于 minSize 的值
+        //  - 下面配置 2048 的含义
         //    - 有的第三方模块虽然很小，但是我们仍然将其提取出来，但是太小的，小于 2KB 的就不提取了
         defaultVendors: {
           name: 'vendors', // 给输出的 bundle 起个名
@@ -469,7 +472,8 @@ module.exports = {
         },
         // 抽取出一个公共文件（注意：并不是公共代码，单页面 SPA 项目中只有一个入口，所以不存在公共代码）
         // 注意：其实这个配置在 SPA 中是没必要的，因为 webpack 会根据默认配置或 import() 语法默认做分包
-        //  - 因为这个组我们给了名字 common，造成的后果是：入口文件中引入的所有文件（不论是动态引入还是静态引入）都会被打到这个包中
+        //  - 因为这个组我们给了个名字（随便啥名都行），造成的效果是：入口文件中引入的所有文件（不论是动态引入还是静态引入）都会被打到这个包中
+        //    - 此时，main.[hash].js 这个 bundle 还是会输出的，只不过它里面只包含一些不依赖任何引入文件的可自执行的代码
         //  - 如果不给名字，就还是按默认的分包方式
         // 这里只是做演示，实际项目中一般不需要这么做
         // common: {
