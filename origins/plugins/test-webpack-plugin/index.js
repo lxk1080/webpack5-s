@@ -3,8 +3,8 @@
  *  - 1、webpack 执行流程大致如下：
  *    - 1、webpack 加载 webpack.config.js 中所有配置，此时就会 new TestPlugin()，插件的 constructor 被执行
  *    - 2、webpack 创建 compiler 对象（后面 plugin 中的 apply 方法要用到）
- *    - 3、遍历 plugins 中所有的插件，调用插件的 apply 方法
- *    - 4、执行剩下编译流程（触发各个 hooks 事件，并执行挂载在上面的任务）
+ *    - 3、遍历 plugins 中所有的插件，调用插件的 apply 方法（初始化所有注册的插件，这时 compiler 还没开始执行，初始化完，下一步就可以开始执行了）
+ *    - 4、执行剩下编译流程（触发各个 hooks 事件，并执行挂载在上面的任务，可参考流程图，compiler.hooks 开始逐个触发）
  *  - 2、在不同的 hooks 上挂载任务时，不需要关注定义顺序（写代码的顺序）
  *    - 因为 hooks 会在相应的时机自动被触发
  *  - 3、下一个 hooks 会在上一个 hooks 执行完毕后才会被触发
