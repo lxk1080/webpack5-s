@@ -12,6 +12,7 @@ console.log('threads ==>', threads);
 
 /**
  * 在开发模式中使用 style-loader 将样式直接插入到动态创建的 style 标签中
+ *  - 另外，style-loader 支持 css 样式的 HMR 功能，对于 js 的 HMR 则需要另外处理了
  */
 const getStyleLoaders = (preProcessor) => {
   return [
