@@ -1,6 +1,7 @@
 /**
  * @desc 实现 style-loader 的功能
- *  - 主要是使用了 pitching loader 这一功能，使用 normal loader 难以操作（具体步骤，看以下解析）
+ *  - 主要是使用了 pitching-loader 这一功能，使用 normal-loader 难以操作（具体步骤，看以下解析）
+ *  - 利用内联 loader 的写法，改变 css-loader 对 css 文件处理后输出的代码类型，js => css
  */
 
 function styleLoader(content) {
@@ -13,7 +14,7 @@ function styleLoader(content) {
 
       use: ["./loaders/style-loader", "css-loader"],
 
-      问题是 css-loader 暴露了一段 js 代码，style-loader 需要执行 js 代码，得到返回值，再动态创建 style 标签，插入到页面上
+      问题是 css-loader 返回了一段 js 代码，style-loader 需要执行 js 代码，得到返回值，再动态创建 style 标签，插入到页面上
 
       执行 js 代码这块，不好操作！
 
@@ -52,8 +53,8 @@ styleLoader.pitch = function (remainingRequest) {
   console.log('relativePath ==>', relativePath);
   // ../../node_modules/css-loader/dist/cjs.js!./index.css
 
-  // 2. 引入 css-loader 处理后的资源
-  // 3. 创建 style，将内容插入页面中生效
+  // 2. 引入 css-loader 处理后的资源（通过这种内联的方式，css-loader 处理后的代码就是 css 代码了，不再是 js 代码了）
+  // 3. 创建 style，将内容直接插入页面中生效
   /*
     relativePath 是 inline loader 用法，代表要处理的 index.css 资源，使用 css-loader 处理，
     !! 代表禁用所有配置的 loader，只使用 inline loader，
