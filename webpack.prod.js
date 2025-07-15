@@ -375,7 +375,7 @@ module.exports = {
   ],
 
   optimization: {
-    // 控制是否需要做压缩（可以在调试时使用）
+    // 控制是否需要做压缩（可以在调试时使用，如果设置为 false，那下面 minimizer 配置的内容都不会生效）
     minimize: true,
     // minimizer 的默认值为 [new TerserWebpackPlugin()]，表示自动压缩 js 代码
     minimizer: [
