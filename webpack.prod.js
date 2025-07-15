@@ -26,6 +26,7 @@ console.log('threads ==>', threads);
  * 3、在 package.json 文件中添加 browserslist 来控制样式的兼容性做到什么程度
  *    - "browserslist": ["last 2 version", "> 1%", "not dead"]
  *    - 以上配置意义：支持浏览器最后两个版本、覆盖到 99% 的浏览器（冷门的算了）、有些发行就死了的浏览器不用支持
+ *      - "> 1%" 的字面意思是：浏览器的市场占有率大于 1%
  *    - browserslist 是一个单独的库，但是它可供 postcss-preset-env 使用
  *    - 想了解更多 browserslist，去链接：https://github.com/browserslist/browserslist
  * @param preProcessor 预处理器
