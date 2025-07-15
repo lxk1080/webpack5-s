@@ -348,7 +348,7 @@
             - 代码：[banner-webpack-plugin](./origins/plugins/banner-webpack-plugin/index.js)
             - 补充：这个文件里面还说了关于 clean: true 的一些坑，很重要！
           - clean-webpack-plugin
-            - 作用：打包输出文件前，清空打包目录
+            - 作用：打包输出文件前，清空打包目录（可以解决上面插件提到的 clean: true 的问题）
             - 代码：[clean-webpack-plugin](./origins/plugins/clean-webpack-plugin/index.js)
           - analyze-webpack-plugin
             - 作用：分析 webpack 打包资源大小，并输出分析文件
