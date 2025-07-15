@@ -14,7 +14,9 @@ function styleLoader(content) {
 
       use: ["./loaders/style-loader", "css-loader"],
 
-      问题是 css-loader 返回了一段 js 代码，style-loader 需要执行 js 代码，得到返回值，再动态创建 style 标签，插入到页面上
+      问题是 css-loader 返回了一段 js 代码（这里的 content 参数），
+
+      style-loader 需要执行 js 代码，得到返回值，再动态创建 style 标签，插入到页面上，
 
       执行 js 代码这块，不好操作！
 
@@ -53,7 +55,11 @@ styleLoader.pitch = function (remainingRequest) {
   console.log('relativePath ==>', relativePath);
   // ../../node_modules/css-loader/dist/cjs.js!./index.css
 
-  // 2. 引入 css-loader 处理后的资源（通过这种内联的方式，css-loader 处理后的代码就是 css 代码了，不再是 js 代码了）
+  // 2. 引入 css-loader 处理后的资源
+  //    - 简单理解：通过这种内联的方式，css-loader 处理后的代码就是 css 代码了，不再是 js 代码了
+  //    - 实际表现：通过这种引入方式得到的 style 数据，是一个 webpack 模块，当我们执行 styleEl.innerHTML = style 这句时，
+  //      style 模块会调用自身的 toString() 方法并赋值，也就相当于 styleEl.innerHTML = style.toString()，
+  //      这个 style.toString() 的返回值正是我们需要的 css 样式代码
   // 3. 创建 style，将内容直接插入页面中生效
   /*
     relativePath 是 inline loader 用法，代表要处理的 index.css 资源，使用 css-loader 处理，
