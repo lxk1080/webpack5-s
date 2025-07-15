@@ -329,7 +329,7 @@
             - 由 compiler 暴露的钩子：
               - 查阅文档：https://webpack.docschina.org/api/compiler-hooks/
           - Compilation
-            - compilation 对象代表一次资源的构建，compilation 实例能够访问所有的模块和它们的依赖
+            - compilation 对象代表一次资源的构建（每一次资源的构建都是一个 compilation，可以有多个），compilation 实例能够访问所有的模块和它们的依赖
             - 一个 compilation 对象会对构建依赖图中所有模块，进行字面上的编译(literal compilation)。在编译阶段，模块会被加载(load)、封存(seal)、优化(optimize)、分块(chunk)、哈希(hash)和重新创建(restore)
             - 主要属性如下：
               - `compilation.modules`：可以访问所有模块，打包的每一个文件都是一个模块
