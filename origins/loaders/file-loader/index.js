@@ -12,7 +12,7 @@ module.exports = function (content) {
   const interpolatedName = loaderUtils.interpolateName(this, 'imgs/[hash].[ext][query]', {
     content,
   })
-  // 2. 将文件输出出去，参数：文件名、文件内容
+  // 2. 将文件输出出去（输出到 dist 目录），参数：文件名、文件内容
   this.emitFile(interpolatedName, content)
   // 3. 返回：module.exports = "文件路径（文件名）"
   return `module.exports = "${interpolatedName}"`
