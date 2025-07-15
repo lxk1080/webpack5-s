@@ -301,13 +301,13 @@
           - Tapable 为 webpack 提供了统一的插件接口（钩子）类型定义，它是 webpack 的核心功能库。webpack 中目前有十种 hooks，在 Tapable 源码中可以看到，他们是：
             ```js
               // 源码地址：https://github.com/webpack/tapable/blob/master/lib/index.js
-              exports.SyncHook = require("./SyncHook");
+              exports.SyncHook = require("./SyncHook"); // 同步钩子
               exports.SyncBailHook = require("./SyncBailHook");
               exports.SyncWaterfallHook = require("./SyncWaterfallHook");
               exports.SyncLoopHook = require("./SyncLoopHook");
-              exports.AsyncParallelHook = require("./AsyncParallelHook");
+              exports.AsyncParallelHook = require("./AsyncParallelHook"); // 异步并行钩子
               exports.AsyncParallelBailHook = require("./AsyncParallelBailHook");
-              exports.AsyncSeriesHook = require("./AsyncSeriesHook");
+              exports.AsyncSeriesHook = require("./AsyncSeriesHook"); // 异步串行钩子
               exports.AsyncSeriesBailHook = require("./AsyncSeriesBailHook");
               exports.AsyncSeriesLoopHook = require("./AsyncSeriesLoopHook");
               exports.AsyncSeriesWaterfallHook = require("./AsyncSeriesWaterfallHook");
@@ -338,10 +338,10 @@
               - `compilation.hooks`：可以注册 tapable 的不同种类 Hook，用于在 compilation 编译模块阶段进行逻辑添加以及修改（自定义插件）
             - 由 compilation 暴露的钩子：
               - 查阅文档：https://webpack.docschina.org/api/compilation-hooks/
-        - 生命周期示意图
+        - 生命周期示意图（Webpack 构建的大致流程）
           <br/><img src="./picture/03.jpg" width="40%" height="auto">
         - 开发插件并调试
-          - 代码：[test-webpack-plugin](./origins/plugins/test-webpack-plugin/index.js)（内有开发自定义插件时的一些说明）
+          - 代码：[test-webpack-plugin](./origins/plugins/test-webpack-plugin/index.js)（内有开发自定义插件时的一些说明，以及 Webpack 构建流程文字说明）
         - 自定义 plugin
           - banner-webpack-plugin
             - 作用：给打包输出的文件添加注释
