@@ -27,7 +27,7 @@
 
 12. 基础与初步理解
     - webpack 本身功能比较少，只能处理 js 文件（还有 json 也可以），处理其它文件需要对应的 loader
-    - webpack 本身的一个重要功能就是，处理模块化问题，ES Module 和 Commonjs 都可以处理
+    - webpack 的一个重要功能就是，对模块化的支持，ES Module 和 Commonjs 都可以处理（当然这个也是所有打包工具都需要做的事）
     - 理解 webpack 打包过程中三个重要的概念：module、chunk、bundle
       - module：各个源码文件（js、css、png、svg ...）
       - chunk：多个模块合并而成的，在打包过程中出现，存在于内存中
