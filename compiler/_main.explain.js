@@ -2,7 +2,7 @@
 (function () {
   "use strict";
   // __webpack_modules__ 里面列举了除了入口文件外的所有模块
-  //  - 其中 key 是文件模块路径
+  //  - 其中 key 是模块文件的路径
   //  - 对应的 value 是一个函数，函数内包含这个文件模块的内容，并且已经准备好了要导出的内容（暂时还没导出）
   //  - 那什么时候会导出？
   //    - 在调用 __webpack_require__ 的时候会导出（其实就是把内容 return 出去）
@@ -13,7 +13,7 @@
       __webpack_require__.r(__webpack_exports__);
       __webpack_require__.d(__webpack_exports__, {
         // 注意这个地方，其 value 是一个函数，返回一个函数，返回的函数才是我们需要的东西
-        //  - 为什么不直接赋值成目标函数？
+        //  - 为什么不直接赋值成目标函数？（像这样："default": count）
         //    - 因为 __webpack_require__.d 会把这个外层函数作为 get 函数，所以我们调用属性的时候，外层函数会直接被执行，并返回我们需要的东西
         "default": function() { return count; }
       });
@@ -60,18 +60,19 @@
       exports: {}
     };
 
-    // __webpack_require__ 把容器给到模块，让模块往容器内放入自己的导出内容，放的时候需要用到的工具，也是 __webpack_require__ 提供的
-    // 这就好比：__webpack_require__ 是村长，每个模块都是村里的住户
-    // 有一天：张三需要村里某些住户的姓名，此时村长就给这些住户每人一张纸一支笔，让住户自己在纸上写上名字，写好了后，村长把这些纸张收集起来，给到张三
-    // 上面的人物对应到代码就是：
-    //  - 有一天：代码执行到这了
-    //  - 张三：某个模块（也许是入口模块）
-    //  - 村长：__webpack_require__
-    //  - 纸张：module.exports
-    //  - 笔：__webpack_require__.d
-    //  - 住户：模块
-    //  - 名字：模块导出的内容
-    //  - 给张三：return module.exports
+    // __webpack_require__ 把容器（module.exports）给到模块，让模块往容器内放入自己的导出内容，放的时候需要用到的工具，也是 __webpack_require__ 提供的
+    // 这就好比：__webpack_require__ 是村长，每个模块都是村里的住户（我只是觉得这个比喻挺形象的，所以写在这，下面的故事可以直接略过）
+    //  有一天：张三需要村里某些住户的姓名，此时村长就给这些住户每人一张纸一支笔，让住户自己在纸上写上名字，写好了后，村长把这些纸张收集起来，给到张三
+    //  上面的人物对应到代码就是：
+    //    有一天：代码执行到这了
+    //    张三：某个模块（也许是入口模块）
+    //    村长：__webpack_require__
+    //    纸张：module.exports
+    //    笔：__webpack_require__.d
+    //    住户：模块
+    //    名字：模块导出的内容
+    //    给张三：return module.exports
+    // 哈哈，听不懂就直接看代码的执行吧，总之还是比较巧妙的，每个模块执行自身的挂载函数，将导出内容挂到 module.exports 中
     __webpack_modules__[moduleId](module, module.exports, __webpack_require__);
 
     return module.exports;
@@ -81,10 +82,10 @@
     // 把模块导出的内容放到 __webpack_require__ 生成的 module.exports 上
     __webpack_require__.d = function (exports, definition) {
       for (var key in definition) {
-        // 是自己的属性 + exports 上没有的
+        // 是自己的属性 && exports 上没有的
         if (__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
           // definition[key] 是一个函数，exports[key] = definition[key]()
-          Object.defineProperty(exports, key, {enumerable: true, get: definition[key]});
+          Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
         }
       }
     };
@@ -102,9 +103,9 @@
     __webpack_require__.r = function (exports) {
       if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
         // 这句话的作用是将 Object.prototype.toString.call(exports) 值变成 [object Module]，默认是 [object Object]
-        Object.defineProperty(exports, Symbol.toStringTag, {value: 'Module'});
+        Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
       }
-      Object.defineProperty(exports, '__esModule', {value: true});
+      Object.defineProperty(exports, '__esModule', { value: true });
     };
   }();
 

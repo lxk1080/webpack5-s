@@ -363,7 +363,7 @@
 
 16. webpack 编译结果分析
     - 首先使用命令行：`npm run compiler`，然后到 `./compiler/bundle` 文件夹下查看结果
-    - 可以到 `./compiler/_main.explain.js` 文件内查看编译结果分析（里面的注释写的很详细哈）
+    - 可以到 `./compiler/_main.explain.js` 文件内查看编译结果分析（里面的注释写的很详细哈，重点看这个文件！[转至此文件](./compiler/_main.explain.js)）
       - webpack 自己实现了一套导入导出体系，它把你写的代码全部进行编译转换，然后修改成它自己的那一套导入导出模式
         - 所以，即使你在前端写 commonjs 的代码，webpack 也能识别并转换，它有自己的一套模块化规范
       - 至于 webpack 是怎么做代码转换的？
@@ -371,4 +371,4 @@
 
 
 
-<br/>持续更新中。。
+<br/> 持续更新中。。 <br/><br/>
