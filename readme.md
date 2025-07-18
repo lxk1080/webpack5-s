@@ -37,11 +37,13 @@
         - 优化开发体验：热更新（HMR）、开发服务器（跨域代理）
         - 提高项目性能：文件压缩、代码混淆、代码分割
     - webpack 本身功能比较少，只能处理 js 文件（还有 json 也可以），处理其它文件需要对应的 loader
-    - webpack 的一个核心功能就是，对模块化的支持，ES Module 和 Commonjs 都可以处理（当然这个也是所有构建工具都需要做的事）
+      - 当然，如果使用了 ES6 及以上语法，webpack 就处理不了了，需要使用 babel-loader 做语法降级
+    - webpack 的一个核心功能就是，对模块化的支持，ES Module 和 Commonjs 都可以处理
+      - 当然这个也是所有构建工具都需要做的事
     - 理解 webpack 打包过程中三个重要的概念：module、chunk、bundle
       - module：各个源码文件（js、css、png、svg ...）
       - chunk：多个模块合并而成的，在打包过程中出现，存在于内存中
-      - bundle：最终的输出文件，chunk 会被输出成文件，这种文件被称之为 bundle，一个 chunk 对应一个 bundle 文件
+      - bundle：最终的输出文件，chunk 会被输出成文件，被称之为 bundle，一个 chunk 对应一个 bundle 文件
     - webpack 会先把所有模块都解析完，打包，然后交给浏览器
       - 因此，webpack 具有性能瓶颈，项目越大，webpack 需要处理的 js 代码就越多，需要很长时间才能启动开发服务器
 
@@ -401,6 +403,31 @@
       - 示例代码：`resolve(__webpack_require__(chunkId))`
     - 最后评价下：这里的加载，因为是动态的加载，所以肯定不能用 `import xxx from 'xxx'` 这种形式，再因为是浏览器环境，所以也不能用 `require`，
     <br/> 所以只能使用 `script` 标签去加载，或者自己发送 http 请求去加载了，又因为加载后需要立即执行，所以使用 script 标签做动态加载实在是不二之选
+
+
+18. 说一说 Webpack 的构建流程
+    - 加载配置
+      - Webpack 会读取 webpack.config.js 中所有配置，配置文件会被解析执行，此时所有插件的 constructor 被执行
+    - 创建 Compiler 对象
+      - 每次启动 webpack 构建时它都是一个独一无二，仅仅会创建一次的对象
+      - 可以访问本次启动 webpack 时所有的配置文件（`compiler.options`），包括但不限于 loaders、entry、output、plugin 等等完整配置信息
+      - 可以进行文件操作（`compiler.inputFileSystem` 和 `compiler.outputFileSystem`），类似 Node 中的 fs 模块
+      - 可以在 `compiler.hooks` 上注册插件，从而在 compiler 生命周期中植入不同的逻辑
+    - 遍历 plugins 中所有的插件，调用插件的 apply 方法，从而初始化所有注册的插件
+    - 开始按顺序执行 Compiler 对象上的方法，并触发对应的钩子事件（例如：`compiler.run()`，开始启动 Webpack 构建）
+    - 当执行到 `compiler.compile()` 方法时，会创建 Compilation 对象，进入到编译阶段
+      - 此对象代表着一次资源的构建，每次构建都对应着一个新的 Compilation 对象
+      - 会对构建依赖图中的所有模块进行编译，在编译阶段有很多操作，例如模块会被：加载(load)、封存(seal)、优化(optimize)、分块(chunk)、哈希(hash)、等等
+      - 它可以访问所有模块（`compilation.modules`）和 chunk（`compilation.chunks`）
+      - 也可以访问本次打包生成所有文件的结果（`compilation.assets`）
+      - 我们可以在 `compilation.hooks` 上注册插件，用于在 Compilation 编译模块阶段，进行逻辑添加及修改
+    - 编译阶段，会从入口文件开始，按照配置的 loader 对模块进行转换操作（转换过程需要用到 AST 工具做语法分析）
+    - 使用 AST（抽象语法树）分析模块之间的依赖关系，递归地处理所有依赖的模块
+    - 然后会把编译好的模块组合成一个个 Chunk，并生成最终的文件（存储在内存中，尚未写入磁盘）
+    - 编译阶段结束后，再回到 Compiler 对象
+    - 通过 Compiler 对象的文件操作，最终将 assets 写入磁盘，输出文件
+      - 调用 `compiler.emitAssets()` 方法，执行写入操作：`compiler.outputFileSystem.writeFile`
+    - 打包结束
 
 
 
