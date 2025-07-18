@@ -26,8 +26,14 @@
 
 
 12. 基础与初步理解
+    - 何为构建工具？或者说构建工具做了啥？
+      - 核心功能：
+        - 将我们所写的浏览器不认识的或不能处理的代码，转化成了浏览器可以正常运行的代码（html、js、css），就类似于某一个净水厂（从污水到纯净水的过程）
+      - 辅助功能：
+        - 优化开发体验：热更新（HMR）、开发服务器（跨域代理）
+        - 提高项目性能：文件压缩、代码混淆、代码分割
     - webpack 本身功能比较少，只能处理 js 文件（还有 json 也可以），处理其它文件需要对应的 loader
-    - webpack 的一个重要功能就是，对模块化的支持，ES Module 和 Commonjs 都可以处理（当然这个也是所有构建工具都需要做的事）
+    - webpack 的一个核心功能就是，对模块化的支持，ES Module 和 Commonjs 都可以处理（当然这个也是所有构建工具都需要做的事）
     - 理解 webpack 打包过程中三个重要的概念：module、chunk、bundle
       - module：各个源码文件（js、css、png、svg ...）
       - chunk：多个模块合并而成的，在打包过程中出现，存在于内存中
@@ -368,6 +374,25 @@
         - 所以，即使你在前端写 commonjs 的代码，webpack 也能识别并转换，它有自己的一套模块化规范
       - 至于 webpack 是怎么做代码转换的？
         - 大致流程就是 webpack 会先读文件，然后利用 ast 工具做语法分析，进行文件内容替换，最后把处理后的文件输出出来，具体执行流程后面再说
+
+
+17. `import()` 的实现原理是什么？（扩展：vite 的 import，使用的就是 ES Module 自带的动态导入语法）
+    - 其实它就是一个异步的方法，执行 `import()` 返回一个 promise
+    - promise 里面会创建一个 `script`，设置 `script.src = 组件对应的 js 文件的请求路径`
+    - 然后将 script 标签插入到 document.head 里执行，就能拿到这个组件对应的文件，并执行文件内的 js 代码
+    - 这个 js 代码中，包含了模块的注册逻辑，注册完成后，webpack 就可以通过 `__webpack_require__(chunkId)` 拿到这个模块
+    - 了解下 Webpack 模块注册机制？
+      - 每个打包后的 JS 文件（包括异步 chunk）都包含一个模块注册函数（`__webpack_require__`），其核心作用是：
+        - 将模块内容存入 Webpack 的内部模块缓存（installedModules）
+        - 标记模块状态为「已加载」
+        - 提供模块导出接口
+      - 欲了解详情，可以看上面第 16 节写的 webpack 编译结果分析
+    - 当文件加载完成后，会响应 script.onload 事件，事件内执行 resolve 方法，返回文件内容
+      - 示例代码：`resolve(__webpack_require__(chunkId))`
+    - 最后评价下：这里的加载，因为是动态的加载，所以肯定不能用 `import xxx from 'xxx'` 这种形式，再因为是浏览器环境，所以也不能用 `require`，
+    <br/> 所以只能使用 `script` 标签去加载，或者自己发送 http 请求去加载了，又因为加载后需要立即执行，所以使用 script 标签做动态加载实在是不二之选
+
+
 
 
 
